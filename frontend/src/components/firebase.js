@@ -3,8 +3,13 @@ import {
     GoogleAuthProvider,
     getAuth,
     signInWithPopup,
+    browserLocalPersistence,
+    setPersistence
   } from "firebase/auth";
-  import {
+
+import axios from 'axios'
+
+import {
     getFirestore,
     query,
     getDocs,
@@ -25,25 +30,38 @@ const googleProvider = new GoogleAuthProvider();
 
 const signInWithGoogle = async () => {
     try {
-      const res = await signInWithPopup(auth, googleProvider);
-      const user = res.user;
-      const q = query(collection(db, "users"), where("uid", "==", user.uid));
-      const docs = await getDocs(q);
-      if (docs.docs.length === 0) {
-        await addDoc(collection(db, "users"), {
-          uid: user.uid,
-          name: user.displayName,
-          authProvider: "google",
-          email: user.email,
-        });
-        return user.uid;
+        setPersistence(auth, browserLocalPersistence)
+        const res = await signInWithPopup(auth, googleProvider);
+        const user = res.user;
+        const q = query(collection(db, "users"), where("uid", "==", user.uid));
+        const docs = await getDocs(q);
+        if (docs.docs.length === 0) {
+            await addDoc(collection(db, "users"), {
+                uid: user.uid,
+                name: user.displayName,
+                authProvider: "google",
+                email: user.email,
+            });
       }
+        await generateWebToken(user);
+
+        return user;
     } catch (err) {
       console.error(err);
       alert(err.message);
       return null;
     }
-    return true
   };
+
+  const generateWebToken = async (user) => {
+    await axios.post("http://localhost:8000/signup", 
+            {
+              uid: user.uid,
+            }).then((res) => {
+              console.log(res)
+              localStorage.setItem("racacoonie-auth-token", res["data"])
+            })
+    
+  }
 
   export {signInWithGoogle}
