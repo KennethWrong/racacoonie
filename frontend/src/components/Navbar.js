@@ -138,7 +138,7 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <button class="bg-transparent text-black font-semibold hover:text-black py-2 px-4 hover:border-transparent rounded">
+              <button className="bg-transparent text-black font-semibold hover:text-black py-2 px-4 hover:border-transparent rounded">
                 Profile</button>
             </Menu>
           </Box>

@@ -4,7 +4,7 @@ import {
     getAuth,
     signInWithPopup,
     browserLocalPersistence,
-    setPersistence
+    setPersistence,
   } from "firebase/auth";
 
 import axios from 'axios'
@@ -53,6 +53,11 @@ const signInWithGoogle = async () => {
     }
   };
 
+
+const handleSignOut = () => {
+  localStorage.clear()
+}
+
   const generateWebToken = async (user) => {
     await axios.post("http://localhost:8000/signup", 
             {
@@ -64,4 +69,4 @@ const signInWithGoogle = async () => {
     
   }
 
-  export {signInWithGoogle}
+  export {signInWithGoogle, handleSignOut}
