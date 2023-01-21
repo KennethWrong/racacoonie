@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from firebase_admin import auth, initialize_app, credentials
+from sqlalchemy import func
 
 app = Flask(__name__)
 
@@ -231,10 +232,38 @@ def getAllTags():
 #Get recipe with filter settings
 @app.route('/recipe/filter', methods=['POST'])
 def get_recipe_with_filter():
-  # get specific recipe from DB 
+  req = request.json
+  print(req)
+  minutes = req["minutes"]
+  tags = req["tags"]
+  search_phrase = req["search"]
+  ingredients = req["ingredients"]
+
+  recipes = Recipe.query.filter_by()
+
+  if minutes:
+    recipes = recipes.filter(Recipe.minutes <  minutes)
+  
+  if search_phrase and search_phrase != "":
+    recipes = recipes.filter(Recipe.name.ilike(search_phrase))
+  
+  if  tags and len(tags) != 0:
+    for t in tags:
+      recipes = recipes.filter(Recipe.tags.contains(t))
+  
+  if ingredients and len(ingredients) != 0:
+    for i in ingredients:
+      recipes = recipes.filter(Recipe.ingredients.ilike(i))
+  
+  recipe_list = [r.to_dict() for r in recipes]
+  print(recipe_list)
+
   return "200"
 
 @app.route('/recipe/create', methods=['POST'])
+def create_recipe():
+  # Write to database with user recipe
+  return "200"
 
 # Return jwt token to front-end 
 @app.route('/signup', methods=["POST"])
