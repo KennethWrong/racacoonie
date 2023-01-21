@@ -4,7 +4,7 @@ import {
     getAuth,
     signInWithPopup,
     browserLocalPersistence,
-    setPersistence
+    setPersistence,
   } from "firebase/auth";
 
 import axios from 'axios'
@@ -43,14 +43,7 @@ const signInWithGoogle = async () => {
                 email: user.email,
             });
       }
-        console.log(user)
-
-        user.getIdToken(/* forceRefresh */ true).then(async function(idToken) {
-            console.log(idToken);
-            generateWebToken(user);
-          }).catch(function(error) {
-            // Handle error
-          });
+        await generateWebToken(user);
 
         return user;
     } catch (err) {
@@ -59,6 +52,11 @@ const signInWithGoogle = async () => {
       return null;
     }
   };
+
+
+const handleSignOut = () => {
+  localStorage.clear()
+}
 
   const generateWebToken = async (user) => {
     await axios.post("http://localhost:8000/signup", 
@@ -71,4 +69,4 @@ const signInWithGoogle = async () => {
     
   }
 
-  export {signInWithGoogle}
+  export {signInWithGoogle, handleSignOut}
