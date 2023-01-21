@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter, Route, Routes } from 'react-router-dom'
+import {BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import { useState, useEffect, useMemo } from "react";
 import Homepage from './pages/Homepage';
@@ -23,7 +23,9 @@ function App() {
             <NavbarComponent loggedin={loggedin}/>
             <Routes>
               <Route path ='/' element={<Homepage loggedin={loggedin} setLoggedin={setLoggedin}/>} />
-              <Route path ='/login' element={<Login loggedin={loggedin} setLoggedin={setLoggedin}/>} />
+              <Route path ='/login' element={
+                loggedin? <Navigate to="/" /> :
+                          <Login loggedin={loggedin} setLoggedin={setLoggedin}/>} />
             </Routes>
           </BrowserRouter>
           </div>
