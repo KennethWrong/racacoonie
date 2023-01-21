@@ -53,7 +53,13 @@ class Recipe(db.Model, SerializerMixin):
 
   # user_ratings = db.relationship(
   #       'User', secondary=liked_recipes, backref='user_ratings', lazy=True)
+  @staticmethod
+  def get_dict(recipe_obj):
+    recipe = recipe_obj.to_dict()
+    recipe['users'] = [user.to_dict() for user in recipe_obj.user_ratings]
 
+    return recipe
+  
 class User(db.Model, SerializerMixin):
   serialize_only = ('id', 'username', 'email')
   serialize_rules = ('-liked_recipes',)
@@ -64,6 +70,12 @@ class User(db.Model, SerializerMixin):
 
   liked_recipes = db.relationship('Recipe', secondary=liked_recipes_table, backref="user_ratings", lazy=True)
 
+  @staticmethod
+  def get_dict(user_obj):
+    user = user_obj.to_dict()
+    user['liked_recipes'] = [recipe.to_dict() for recipe in user_obj.liked_recipes]
+
+    return user
 
 @app.route("/init-db", methods=['POST', 'GET'])
 def init_db():
@@ -87,10 +99,10 @@ def init_db():
 def getAllUsers():
   try:
     users = User.query.all()
-    users_dicts = [x.to_dict() for x in users]
+    users_dicts = [User.get_dict(x) for x in users]
 
-    for i in range(len(users_dicts)):
-      users_dicts[i]['liked_recipes'] = [recipe.to_dict() for recipe in users[i].liked_recipes]
+    # for i in range(len(users_dicts)):
+    #   users_dicts[i]['liked_recipes'] = [recipe.to_dict() for recipe in users[i].liked_recipes]
 
 
     return jsonify({"users": users_dicts}), 200
@@ -102,7 +114,7 @@ def getAllUsers():
 def getAllRecipes():
   try:
     recipes = Recipe.query.all()
-    recipes_dicts = [x.to_dict() for x in recipes]
+    recipes_dicts = [Recipe.get_dict(x) for x in recipes]
 
     return jsonify({"recipes": recipes_dicts}), 200
 
