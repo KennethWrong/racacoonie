@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
@@ -9,18 +9,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import GoogleIcon from '@mui/icons-material/Google';
 import Typewriter from "typewriter-effect";
 import {handleSignOut, inMemoryPersistenceLogin, signInWithGoogle} from '../components/firebase'
-import { Navigate, useNavigate} from 'react-router-dom'
-import {useMemo} from 'react'
+import { useNavigate } from 'react-router-dom'; // version 5.2.0
 
-
-function Login() {
-    const [loggedin, setLoggedin] = useState(false);
+function Login({loggedin, setLoggedin}) {
     const [loading, setLoading] = useState(false);
     const [hi, sethi] = useState(false)
     const navigate = useNavigate();
-
-    
-
 
     useMemo(() => {
         // storing input name
@@ -40,9 +34,9 @@ function Login() {
         var user = await signInWithGoogle();
         if(user) {
             setLoggedin(true);
-            setLoading(false);
-            return navigate("/")
+            
         }
+        setLoading(false);
         
     }
     

@@ -2,31 +2,25 @@ import React from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import Dropdownbar from "../components/Dropdownbar"
-import { useState } from "react";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
+import { useEffect } from "react";
 
 
 
-const Homepage = () => {
-    const [loggedin, setLoggedin] = useState(false);
-    const [hi, sethi] = useState(false)
+const Homepage = ({loggedin, setLoggedin}) => {
 
-    // useMemo(() => {
-    //   var authToken = localStorage.getItem("racacoonie-auth-token");
+      return (
+        <div>
+          {loggedin?
+          <div>
+          <p>Hi</p>
+          <Dropdownbar></Dropdownbar>
+        </div> :
 
-    //     // storing input name
-    //     if (authToken) {
-    //         setLoggedin(true);
-    //     }
-        
-    //   }, []);// Navbar and routing on first open
-
-        return (
-            <div>
-              <Dropdownbar></Dropdownbar>
-            </div>
-          );
-  
+        <Navigate to="/login" />
+          }
+        </div>
+      )
       
   
 };
