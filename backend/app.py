@@ -26,12 +26,26 @@ liked_recipes_table = db.Table('LikedRecipes',
                                 'user.id'), primary_key=True)
                             )
 
+ingredients_table = db.Table('RecipeIngredients',
+                            db.Column('recipe_id', db.Integer, db.ForeignKey(
+                                'recipe.id'), primary_key=True),
+                            db.Column('ingredient_id', db.Integer, db.ForeignKey(
+                                'ingredient.id'), primary_key=True)
+                            )
+
+tags_table = db.Table('RecipeTags',
+                            db.Column('recipe_id', db.Integer, db.ForeignKey(
+                                'recipe.id'), primary_key=True),
+                            db.Column('tag_id', db.Integer, db.ForeignKey(
+                                'tag.id'), primary_key=True)
+                            )
+
 ### Models ###
 class Recipe(db.Model, SerializerMixin):
-  serialize_only = ('id', 'name', 'description', 'minutes', 'tags', 'ingredients',
+  serialize_only = ('id', 'name', 'description', 'minutes',
                     'calories', 'total_fat', 'sugar', 'sodium', 'saturated_fat',
                     'n_steps', 'steps')
-  # serialize_rules = ('-employees', '-job_postings') # exluded from serialization.
+  # serialize_rules = ('-ingredients', '-tags') # exluded from serialization.
 
   id = db.Column(db.Integer, primary_key=True, unique=True)
 
@@ -39,8 +53,6 @@ class Recipe(db.Model, SerializerMixin):
   description = db.Column(db.String(4000))
 
   minutes = db.Column(db.Integer)
-  tags = db.Column(db.String(4000))
-  ingredients = db.Column(db.String(4000))
 
   calories = db.Column(db.Float)
   total_fat = db.Column(db.Float)
@@ -51,12 +63,21 @@ class Recipe(db.Model, SerializerMixin):
   n_steps = db.Column(db.Integer)
   steps = db.Column(db.String(4000))
 
+
+  ingredients = db.relationship('Ingredient', secondary=ingredients_table, backref='recipes', lazy=True)
+  tags = db.relationship('Tag', secondary=tags_table, backref='recipes', lazy=True)
   # user_ratings = db.relationship(
   #       'User', secondary=liked_recipes, backref='user_ratings', lazy=True)
+
+  # tags = db.relationship('tags', secondary=tags_table, backref="recipes", lazy=True)
+
+
   @staticmethod
   def get_dict(recipe_obj):
     recipe = recipe_obj.to_dict()
     recipe['users'] = [user.to_dict() for user in recipe_obj.user_ratings]
+    recipe['ingredients'] = [ingred.to_dict()['name'] for ingred in recipe_obj.ingredients]
+    recipe['tags'] = [tag.to_dict()['name'] for tag in recipe_obj.tags]
 
     return recipe
   
@@ -77,15 +98,42 @@ class User(db.Model, SerializerMixin):
 
     return user
 
+class Ingredient(db.Model, SerializerMixin):
+  serialize_only = ('id', 'name')
+  serialize_rules = ('-recipes',) 
+
+  id = db.Column(db.Integer, primary_key=True, unique=True)
+  name = db.Column(db.String(100), nullable=False)
+
+
+class Tag(db.Model, SerializerMixin):
+  serialize_only = ('id', 'name')
+  serialize_rules = ('-recipes',) 
+  
+  id = db.Column(db.Integer, primary_key=True, unique=True)
+  name = db.Column(db.String(100), nullable=False)
+
 @app.route("/init-db", methods=['POST', 'GET'])
 def init_db():
   db.drop_all()
   db.create_all()
 
-  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15, tags=['vegetarian'],
-              ingredients=['eggs', 'tomatoes'], calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
+  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15,
+              calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
               saturated_fat=0.0, n_steps=5, steps=['make eggs and put tomatoes bruh'])
   db.session.add(r1)
+
+  ing1 = Ingredient(id=0, name="eggs")
+  ing2 = Ingredient(id=1, name="tomatoes")
+  db.session.add(ing1)
+  db.session.add(ing2)
+
+  tag1 = Tag(id=0, name="vegetarian")
+  db.session.add(tag1)
+
+  r1.ingredients.append(ing1)
+  r1.ingredients.append(ing2)
+  r1.tags.append(tag1)
 
   u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
   u1.liked_recipes.append(r1)
@@ -100,10 +148,6 @@ def getAllUsers():
   try:
     users = User.query.all()
     users_dicts = [User.get_dict(x) for x in users]
-
-    # for i in range(len(users_dicts)):
-    #   users_dicts[i]['liked_recipes'] = [recipe.to_dict() for recipe in users[i].liked_recipes]
-
 
     return jsonify({"users": users_dicts}), 200
 
