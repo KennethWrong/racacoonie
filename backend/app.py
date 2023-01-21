@@ -20,13 +20,31 @@ CORS(app)
 
 ### Models ###
 class Recipe(db.Model, SerializerMixin):
-  serialize_only = ('id', 'name')
+  serialize_only = ('id', 'name', 'description', 'minutes', 'tags', 'ingredients'
+                    'calories', 'total_fat', 'sugar', 'sodium', 'saturated_fat',
+                    'n_steps', 'steps')
   # serialize_rules = ('-employees', '-job_postings') # exluded from serialization.
 
-
   id = db.Column(db.Integer, primary_key=True, unique=True)
-  name = db.Column(db.String(300), nullable=False)
 
+  name = db.Column(db.String(1000), nullable=False)
+  description = db.Column(db.String(8000))
+
+  minutes = db.Column(db.Integer)
+  tags = db.Column(db.String(8000))
+  ingredients = db.Column(db.String(8000))
+
+  calories = db.Column(db.Float)
+  total_fat = db.Column(db.Float)
+  sugar = db.Column(db.Float)
+  sodium = db.Column(db.Float)
+  saturated_fat = db.Column(db.Float)
+
+  n_steps = db.Column(db.Integer)
+  steps = db.Column(db.String(8000))
+
+
+    
 
 @app.route("/init-db", methods=['POST', 'GET'])
 def init_db():
