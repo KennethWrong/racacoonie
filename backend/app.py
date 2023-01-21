@@ -164,6 +164,26 @@ def getAllRecipes():
 
   except Exception as exception:
     return f"{exception}"
+  
+@app.route("/ingredient/all", methods=['GET'])
+def getAllIngredients():
+  try:
+    ingredients = [ingred.to_dict()['name'] for ingred in Ingredient.query.all()]
+  
+    return jsonify({"recipes": ingredients}), 200
+
+  except Exception as exception:
+    return f"{exception}", 500
+  
+@app.route("/tag/all", methods=['GET'])
+def getAllTags():
+  try:
+    tags = [tag.to_dict()['name'] for tag in Tag.query.all()]
+  
+    return jsonify({"recipes": tags}), 200
+
+  except Exception as exception:
+    return f"{exception}", 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
