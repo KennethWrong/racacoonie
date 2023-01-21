@@ -63,7 +63,6 @@ const handleSignOut = () => {
             {
               uid: user.uid,
             }).then((res) => {
-              console.log(res)
               localStorage.setItem("racacoonie-auth-token", res["data"])
             })
     
