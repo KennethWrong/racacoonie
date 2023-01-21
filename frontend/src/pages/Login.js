@@ -21,7 +21,7 @@ function Login() {
             setLoggedin(true);
         }
         
-      }, []);
+      }, [loggedin]);// Navbar and routing on first open
 
 
     const handleSignInWithGoogle = async (e) => {
