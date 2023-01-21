@@ -13,7 +13,7 @@ cred = credentials.Certificate("./assets/secret.json")
 default_app = initialize_app(cred)
 
 # THIS IS ONLINE
-app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/db1?sslmode=verify-full" 
+app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/ken_db?sslmode=verify-full" 
 # app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/db1?sslmode=disable"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
@@ -29,12 +29,26 @@ liked_recipes_table = db.Table('LikedRecipes',
                                 'user.id'), primary_key=True)
                             )
 
+ingredients_table = db.Table('RecipeIngredients',
+                            db.Column('recipe_id', db.Integer, db.ForeignKey(
+                                'recipe.id'), primary_key=True),
+                            db.Column('ingredient_id', db.Integer, db.ForeignKey(
+                                'ingredient.id'), primary_key=True)
+                            )
+
+tags_table = db.Table('RecipeTags',
+                            db.Column('recipe_id', db.Integer, db.ForeignKey(
+                                'recipe.id'), primary_key=True),
+                            db.Column('tag_id', db.Integer, db.ForeignKey(
+                                'tag.id'), primary_key=True)
+                            )
+
 ### Models ###
 class Recipe(db.Model, SerializerMixin):
-  serialize_only = ('id', 'name', 'description', 'minutes', 'tags', 'ingredients',
+  serialize_only = ('id', 'name', 'description', 'minutes',
                     'calories', 'total_fat', 'sugar', 'sodium', 'saturated_fat',
                     'n_steps', 'steps')
-  # serialize_rules = ('-employees', '-job_postings') # exluded from serialization.
+  # serialize_rules = ('-ingredients', '-tags') # exluded from serialization.
 
   id = db.Column(db.Integer, primary_key=True, unique=True)
 
@@ -42,8 +56,6 @@ class Recipe(db.Model, SerializerMixin):
   description = db.Column(db.String(4000))
 
   minutes = db.Column(db.Integer)
-  tags = db.Column(db.String(4000))
-  ingredients = db.Column(db.String(4000))
 
   calories = db.Column(db.Float)
   total_fat = db.Column(db.Float)
@@ -54,9 +66,24 @@ class Recipe(db.Model, SerializerMixin):
   n_steps = db.Column(db.Integer)
   steps = db.Column(db.String(4000))
 
+
+  ingredients = db.relationship('Ingredient', secondary=ingredients_table, backref='recipes', lazy=True)
+  tags = db.relationship('Tag', secondary=tags_table, backref='recipes', lazy=True)
   # user_ratings = db.relationship(
   #       'User', secondary=liked_recipes, backref='user_ratings', lazy=True)
 
+  # tags = db.relationship('tags', secondary=tags_table, backref="recipes", lazy=True)
+
+
+  @staticmethod
+  def get_dict(recipe_obj):
+    recipe = recipe_obj.to_dict()
+    recipe['users'] = [user.to_dict() for user in recipe_obj.user_ratings]
+    recipe['ingredients'] = [ingred.to_dict()['name'] for ingred in recipe_obj.ingredients]
+    recipe['tags'] = [tag.to_dict()['name'] for tag in recipe_obj.tags]
+
+    return recipe
+  
 class User(db.Model, SerializerMixin):
   serialize_only = ('id', 'username', 'email')
   serialize_rules = ('-liked_recipes',)
@@ -67,14 +94,35 @@ class User(db.Model, SerializerMixin):
 
   liked_recipes = db.relationship('Recipe', secondary=liked_recipes_table, backref="user_ratings", lazy=True)
 
+  @staticmethod
+  def get_dict(user_obj):
+    user = user_obj.to_dict()
+    user['liked_recipes'] = [recipe.to_dict() for recipe in user_obj.liked_recipes]
+
+    return user
+
+class Ingredient(db.Model, SerializerMixin):
+  serialize_only = ('id', 'name')
+  serialize_rules = ('-recipes',) 
+
+  id = db.Column(db.Integer, primary_key=True, unique=True)
+  name = db.Column(db.String(100), nullable=False)
+
+
+class Tag(db.Model, SerializerMixin):
+  serialize_only = ('id', 'name')
+  serialize_rules = ('-recipes',) 
+  
+  id = db.Column(db.Integer, primary_key=True, unique=True)
+  name = db.Column(db.String(100), nullable=False)
 
 @app.route("/init-db", methods=['POST', 'GET'])
 def init_db():
   db.drop_all()
   db.create_all()
 
-  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15, tags=['vegetarian'],
-              ingredients=['eggs', 'tomatoes'], calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
+  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15,
+              calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
               saturated_fat=0.0, n_steps=5, steps=['make eggs and put tomatoes bruh'])
   
   r2 = Recipe(id=1, name="Kenneth's Fried Rice!")
@@ -85,6 +133,18 @@ def init_db():
   db.session.add(r2)
   db.session.add(r3)
   db.session.add(r4)
+
+  ing1 = Ingredient(id=0, name="eggs")
+  ing2 = Ingredient(id=1, name="tomatoes")
+  db.session.add(ing1)
+  db.session.add(ing2)
+
+  tag1 = Tag(id=0, name="vegetarian")
+  db.session.add(tag1)
+
+  r1.ingredients.append(ing1)
+  r1.ingredients.append(ing2)
+  r1.tags.append(tag1)
 
   u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
   u2 = User(id=1, username='kenneth', email='Kenneth@gmail.com')
@@ -103,11 +163,7 @@ def init_db():
 def getAllUsers():
   try:
     users = User.query.all()
-    users_dicts = [x.to_dict() for x in users]
-
-    for i in range(len(users_dicts)):
-      users_dicts[i]['liked_recipes'] = [recipe.to_dict() for recipe in users[i].liked_recipes]
-
+    users_dicts = [User.get_dict(x) for x in users]
 
     return jsonify({"users": users_dicts}), 200
 
@@ -151,6 +207,26 @@ def get_specific_recipe(recipe_id):
       return jsonify({'recipe': None}), 404
   except Exception as exception:
     return f"{exception}"
+  
+@app.route("/ingredient/all", methods=['GET'])
+def getAllIngredients():
+  try:
+    ingredients = [ingred.to_dict()['name'] for ingred in Ingredient.query.all()]
+  
+    return jsonify({"recipes": ingredients}), 200
+
+  except Exception as exception:
+    return f"{exception}", 500
+  
+@app.route("/tag/all", methods=['GET'])
+def getAllTags():
+  try:
+    tags = [tag.to_dict()['name'] for tag in Tag.query.all()]
+  
+    return jsonify({"recipes": tags}), 200
+
+  except Exception as exception:
+    return f"{exception}", 500
 
 #Get recipe with filter settings
 @app.route('/recipe/filter', methods=['POST'])
