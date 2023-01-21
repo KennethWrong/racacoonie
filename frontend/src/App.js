@@ -28,9 +28,7 @@ function App() {
                 loggedin? <Navigate to="/" /> :
                           <Login loggedin={loggedin} setLoggedin={setLoggedin}/>} 
               />
-              <Route path ='/recipe/:rid' element={
-                loggedin? <Recipe /> :
-                          <Navigate to="/" />}
+              <Route path ='/recipe/:rid' element={ <Recipe />}
               />
             </Routes>
           </BrowserRouter>
