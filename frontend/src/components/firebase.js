@@ -43,14 +43,7 @@ const signInWithGoogle = async () => {
                 email: user.email,
             });
       }
-        console.log(user)
-
-        user.getIdToken(/* forceRefresh */ true).then(async function(idToken) {
-            console.log(idToken);
-            generateWebToken(user);
-          }).catch(function(error) {
-            // Handle error
-          });
+        await generateWebToken(user);
 
         return user;
     } catch (err) {
