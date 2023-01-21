@@ -254,7 +254,7 @@ function ResponsiveAppBar({loggedin, setLoggedin}) {
     
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
-                    <MenuItem component={Link} to="/login">Login</MenuItem>
+                    <MenuItem href="/login">Login</MenuItem>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}
