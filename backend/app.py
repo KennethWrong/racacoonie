@@ -21,6 +21,14 @@ db = SQLAlchemy(app)
 
 CORS(app)
 
+### Tabels ###
+liked_recipes_table = db.Table('LikedRecipes',
+                            db.Column('recipe_id', db.Integer, db.ForeignKey(
+                                'recipe.id'), primary_key=True),
+                            db.Column('user_id', db.Integer, db.ForeignKey(
+                                'user.id'), primary_key=True)
+                            )
+
 ### Models ###
 class Recipe(db.Model, SerializerMixin):
   serialize_only = ('id', 'name', 'description', 'minutes', 'tags', 'ingredients',
@@ -31,20 +39,31 @@ class Recipe(db.Model, SerializerMixin):
   id = db.Column(db.Integer, primary_key=True, unique=True)
 
   name = db.Column(db.String(1000), nullable=False)
-  description = db.Column(db.String(8000), default="")
+  description = db.Column(db.String(4000))
+
+  minutes = db.Column(db.Integer)
+  tags = db.Column(db.String(4000))
+  ingredients = db.Column(db.String(4000))
 
   minutes = db.Column(db.Integer, default=30)
   tags = db.Column(db.String(8000), default="")
   ingredients = db.Column(db.String(8000), default="")
 
-  calories = db.Column(db.Float, default=0)
-  total_fat = db.Column(db.Float, default=0)
-  sugar = db.Column(db.Float, default=0)
-  sodium = db.Column(db.Float, default=0)
-  saturated_fat = db.Column(db.Float, default=0)
+  n_steps = db.Column(db.Integer)
+  steps = db.Column(db.String(4000))
 
-  n_steps = db.Column(db.Integer, default=0)
-  steps = db.Column(db.String(8000), default="")
+  # user_ratings = db.relationship(
+  #       'User', secondary=liked_recipes, backref='user_ratings', lazy=True)
+
+class User(db.Model, SerializerMixin):
+  serialize_only = ('id', 'username', 'email')
+  serialize_rules = ('-liked_recipes',)
+
+  id = db.Column(db.Integer, primary_key=True, unique=True)
+  username = db.Column(db.String(1000), nullable=False)
+  email = db.Column(db.String(100), unique=True, nullable=False)
+
+  liked_recipes = db.relationship('Recipe', secondary=liked_recipes_table, backref="user_ratings", lazy=True)
 
 
 @app.route("/init-db", methods=['POST', 'GET'])
@@ -52,19 +71,43 @@ def init_db():
   db.drop_all()
   db.create_all()
 
-  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!")
+  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15, tags=['vegetarian'],
+              ingredients=['eggs', 'tomatoes'], calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
+              saturated_fat=0.0, n_steps=5, steps=['make eggs and put tomatoes bruh'])
+  
   r2 = Recipe(id=1, name="Kenneth's Fried Rice!")
   r3 = Recipe(id=2, name="Chicken Lo Mein!")
   r4 = Recipe(id=3, name="Qdoba!")
+
   db.session.add(r1)
   db.session.add(r2)
   db.session.add(r3)
   db.session.add(r4)
 
+  u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
+  u1.liked_recipes.append(r1)
+  db.session.add(u1)
+
   db.session.commit()
   return "Databse initalized successfully", 200
 
 # Get all recipes from database
+
+@app.route("/user/all", methods=['GET'])
+def getAllUsers():
+  try:
+    users = User.query.all()
+    users_dicts = [x.to_dict() for x in users]
+
+    for i in range(len(users_dicts)):
+      users_dicts[i]['liked_recipes'] = [recipe.to_dict() for recipe in users[i].liked_recipes]
+
+
+    return jsonify({"users": users_dicts}), 200
+
+  except Exception as exception:
+    return f"{exception}"
+
 @app.route("/recipe/all", methods=['GET'])
 def getAllRecipes():
   try:
