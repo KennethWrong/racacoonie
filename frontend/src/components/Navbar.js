@@ -16,15 +16,13 @@ import { Navigate, Link } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { useEffect } from 'react';
 import { handleSignOut } from './firebase';
-
+import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({loggedin, setLoggedin}) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const [loggedin, setLoggedin] = useState(false);
 
   useMemo(() => {
     var authToken = localStorage.getItem("racacoonie-auth-token");
@@ -57,15 +55,16 @@ function ResponsiveAppBar() {
 
   const handleLogout = (e) => {
     e.preventDefault();
+    setLoggedin(false);
     handleSignOut();
   }
 
-  if (localStorage.getItem("racacoonie-auth-token")) {
+  if (loggedin) {
     return (
         <AppBar position="static">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              <DinnerDiningIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
               <Typography
                 variant="h6"
                 noWrap
@@ -81,7 +80,7 @@ function ResponsiveAppBar() {
                   textDecoration: 'none',
                 }}
               >
-                LOGO
+                Racacoonie
               </Typography>
     
               <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -120,7 +119,7 @@ function ResponsiveAppBar() {
                   ))}
                 </Menu>
               </Box>
-              <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+              <DinnerDiningIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
               <Typography
                 variant="h5"
                 noWrap
@@ -137,7 +136,7 @@ function ResponsiveAppBar() {
                   textDecoration: 'none',
                 }}
               >
-                LOGO
+                Racacoonie
               </Typography>
               <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               </Box>
@@ -165,7 +164,7 @@ function ResponsiveAppBar() {
                   onClose={handleCloseUserMenu}
                 >
                   <MenuItem component={Link} to="/Profile">Profile</MenuItem>
-                  <MenuItem component={Link} to="/logout" onClick={handleLogout}>Logout</MenuItem>            </Menu>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>            </Menu>
               </Box>
             </Toolbar>
           </Container>
@@ -176,7 +175,7 @@ function ResponsiveAppBar() {
     <AppBar position="static">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              <DinnerDiningIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
               <Typography
                 variant="h6"
                 noWrap
@@ -192,7 +191,7 @@ function ResponsiveAppBar() {
                   textDecoration: 'none',
                 }}
               >
-                LOGO
+                Racacoonie
               </Typography>
     
               <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -231,7 +230,7 @@ function ResponsiveAppBar() {
                   ))}
                 </Menu>
               </Box>
-              <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+              <DinnerDiningIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
               <Typography
                 variant="h5"
                 noWrap
@@ -248,7 +247,7 @@ function ResponsiveAppBar() {
                   textDecoration: 'none',
                 }}
               >
-                LOGO
+                Racacoonie
               </Typography>
               <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               </Box>

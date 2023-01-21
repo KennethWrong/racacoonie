@@ -13,7 +13,7 @@ cred = credentials.Certificate("./assets/secret.json")
 default_app = initialize_app(cred)
 
 # THIS IS ONLINE
-app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/db1?sslmode=verify-full" 
+app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/ken_db?sslmode=verify-full" 
 # app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/db1?sslmode=disable"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
@@ -45,9 +45,11 @@ class Recipe(db.Model, SerializerMixin):
   tags = db.Column(db.String(4000))
   ingredients = db.Column(db.String(4000))
 
-  minutes = db.Column(db.Integer, default=30)
-  tags = db.Column(db.String(8000), default="")
-  ingredients = db.Column(db.String(8000), default="")
+  calories = db.Column(db.Float)
+  total_fat = db.Column(db.Float)
+  sugar = db.Column(db.Float)
+  sodium = db.Column(db.Float)
+  saturated_fat = db.Column(db.Float)
 
   n_steps = db.Column(db.Integer)
   steps = db.Column(db.String(4000))

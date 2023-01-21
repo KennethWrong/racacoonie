@@ -1,9 +1,10 @@
 import './App.css';
-import {BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
+import {BrowserRouter, Route, Routes, Navigate, useParams } from 'react-router-dom'
 import Login from './pages/Login'
 import { useState, useEffect, useMemo } from "react";
 import Homepage from './pages/Homepage';
 import NavbarComponent from './components/Navbar';
+import Recipe from './pages/Recipe'
 
 function App() {
   const [loggedin, setLoggedin] = useState(false)
@@ -20,12 +21,13 @@ function App() {
   return (
     <div className="App">     
           <BrowserRouter>
-            <NavbarComponent loggedin={loggedin}/>
+            <NavbarComponent loggedin={loggedin} setLoggedin={setLoggedin}/>
             <Routes>
               <Route path ='/' element={<Homepage loggedin={loggedin} setLoggedin={setLoggedin}/>} />
               <Route path ='/login' element={
                 loggedin? <Navigate to="/" /> :
                           <Login loggedin={loggedin} setLoggedin={setLoggedin}/>} />
+              <Route path ='/recipe/:rid' element={<Recipe />}/>
             </Routes>
           </BrowserRouter>
           </div>
