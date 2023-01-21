@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import {inMemoryPersistenceLogin, signInWithGoogle} from '../components/firebase'
+import { Navigate } from 'react-router-dom';
 
 function Login() {
     const [loggedin, setLoggedin] = useState(false);
@@ -16,7 +17,7 @@ function Login() {
             setLoggedin(true);
         }
         
-      }, []);
+      }, [loggedin]);// Navbar and routing on first open
 
 
     const handleSignInWithGoogle = async (e) => {
@@ -32,7 +33,7 @@ function Login() {
     return (
         <Container maxWidth="md">
             <h3>RACACOONIE</h3>
-            {!loggedin?
+            {!loggedin ?
                 <Button
                 fullWidth
                 variant="contained"
@@ -42,7 +43,7 @@ function Login() {
                 Log In With Google
             </Button> :
 
-            "I'm logged in"
+            <Navigate to="/" replace />
             }
         </Container>
     )
