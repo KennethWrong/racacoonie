@@ -1,2 +1,8 @@
-flask-sqlalchemy
 cockroachdb
+flask
+flask_cors
+flask-sqlalchemy
+firebase_admin
+requests
+psycopg2
+SQLAlchemy-serializer
