@@ -93,7 +93,7 @@ export default function Dropdownbar() {
           ))}
         </Select>
       </FormControl>
-      <button onClick={handleButtonChange} class="mt-4 text-gray-900 bg-blue-200 border border-black-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-semi text-sm px-5 py-2.5 mr-2 mb-2 mx-auto dark:bg-black dark:text-white dark:border-white-100 dark:hover:bg-gray-700 dark:hover:border-black-600 dark:focus:ring-gray-700"
+      <button onClick={handleButtonChange} className="mt-4 text-gray-900 bg-blue-200 border border-black-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-semi text-sm px-5 py-2.5 mr-2 mb-2 mx-auto dark:bg-black dark:text-white dark:border-white-100 dark:hover:bg-gray-700 dark:hover:border-black-600 dark:focus:ring-gray-700"
 >
             Submit
       </button>

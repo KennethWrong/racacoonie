@@ -1,13 +1,18 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
-import axios from 'axios';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import {inMemoryPersistenceLogin, signInWithGoogle} from '../components/firebase'
+import LogoutIcon from '@mui/icons-material/Logout';
+import GoogleIcon from '@mui/icons-material/Google';
+import Typewriter from "typewriter-effect";
+import {handleSignOut, inMemoryPersistenceLogin, signInWithGoogle} from '../components/firebase'
 
 function Login() {
     const [loggedin, setLoggedin] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         // storing input name
@@ -21,30 +26,103 @@ function Login() {
 
     const handleSignInWithGoogle = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         var user = await signInWithGoogle();
         if(user) {
             setLoggedin(true);
         }
+        setLoading(false);
         
+    }
+    
+    const handleSignOutButton = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setTimeout(() => {
+            handleSignOut();
+            setLoggedin(false);
+            setLoading(false);
+        }, 1000);
     }
 
     return (
-        <Container maxWidth="md">
-            <h3>RACACOONIE</h3>
-            {!loggedin?
-                <Button
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                onClick={handleSignInWithGoogle}
+        <Grid
+            container
+            spacing={0}
+            direction="row"
+            alignItems="center"
+            justifyContent="space-around"
+            style={{ minHeight: '100vh' }}
             >
-                Log In With Google
-            </Button> :
+            <Grid item alignItems="center" justifyContent="center">
+                <Box>
+                    <Box
+                    component="img"
+                    sx={{
+                    marginLeft:24,
+                    height: 350,
+                    width: 350,
+                    maxHeight: { xs: 250, md: 250 },
+                    maxWidth: { xs: 350, md: 250 },
+                    }}
+                    alt="Icon of racoon"
+                    src="https://cdn-icons-png.flaticon.com/512/235/235394.png"
+                    />
+                </Box>
+                <h1
+                    className="text-8xl font-bold tracking-wider text-blue-800
+                                transition duration-500 ease-in-out hover:text-red-800 transform hover:-translate-y-1 hover:scale-110 ..."
+                >RACACOONIE
+                </h1>
+                <div className="text-5xl font-bold tracking-wider text-blue-800 m-7
+                                transition duration-500 ease-in-out hover:text-red-800 transform hover:-translate-y-1 hover:scale-110 ...">
+                    <Typewriter
+                    options={{
+                        autoStart: true,
+                        loop: true,
+                        }}
+                    onInit={(typewriter)=> {
+                    
+                    typewriter
+                        
+                    .typeString("LET 'EM COOK!")
+                        
+                    .pauseFor(1000)
+                    .deleteAll()
+                    .start();
+                    }}
+                    />
+                </div>
+            </Grid>
+            <Grid item xs={3}>
+                {!loggedin?
+                    <LoadingButton
+                    size="large"
+                    onClick={handleSignInWithGoogle}
+                    endIcon={<GoogleIcon />}
+                    loading={loading}
+                    loadingPosition="end"
+                    variant="contained"
+                  >
+                    <span>Log In With Google</span>
+                  </LoadingButton>
+                :
 
-            "I'm logged in"
-            }
-        </Container>
+                <LoadingButton
+                    size="large"
+                    onClick={handleSignOutButton}
+                    endIcon={<LogoutIcon />}
+                    loading={loading}
+                    loadingPosition="end"
+                    variant="contained"
+                  >
+                    <span>Log out</span>
+                  </LoadingButton>
+
+                }
+            </Grid>   
+            
+        </Grid> 
     )
 }
 
