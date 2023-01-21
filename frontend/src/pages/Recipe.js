@@ -17,8 +17,6 @@ export default function Recipe () {
                 (res) => {
                     console.log(res['data']['recipe'])
                     setRecipe(res['data']['recipe'])
-                    console.log('lmao')
-                    return "recipe received"
                 }
             )
         } catch (err){
