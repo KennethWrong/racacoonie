@@ -45,9 +45,11 @@ class Recipe(db.Model, SerializerMixin):
   tags = db.Column(db.String(4000))
   ingredients = db.Column(db.String(4000))
 
-  minutes = db.Column(db.Integer, default=30)
-  tags = db.Column(db.String(8000), default="")
-  ingredients = db.Column(db.String(8000), default="")
+  calories = db.Column(db.Float)
+  total_fat = db.Column(db.Float)
+  sugar = db.Column(db.Float)
+  sodium = db.Column(db.Float)
+  saturated_fat = db.Column(db.Float)
 
   n_steps = db.Column(db.Integer)
   steps = db.Column(db.String(4000))
@@ -85,7 +87,11 @@ def init_db():
   db.session.add(r4)
 
   u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
+  u2 = User(id=1, username='kenneth', email='Kenneth@gmail.com')
+
   u1.liked_recipes.append(r1)
+  u2.liked_recipes.append(r3)
+  u2.liked_recipes.append(r4)
   db.session.add(u1)
 
   db.session.commit()
@@ -104,6 +110,20 @@ def getAllUsers():
 
 
     return jsonify({"users": users_dicts}), 200
+
+  except Exception as exception:
+    return f"{exception}"
+
+@app.route("/user/<string:id>", methods=['GET'])
+def get_user_by_id(id):
+  try:
+    user = User.query.filter_by(id = id).first()
+    user_dict = user.to_dict()
+
+    user_dict['liked_recipes'] = [recipe.to_dict() for recipe in user.liked_recipes]
+
+
+    return jsonify({"user": user_dict}), 200
 
   except Exception as exception:
     return f"{exception}"
