@@ -13,8 +13,9 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Navigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useEffect } from 'react';
+import { handleSignOut } from './firebase';
 
 
 const pages = ['Products', 'Pricing', 'Blog'];
@@ -25,14 +26,12 @@ function ResponsiveAppBar() {
 
   const [loggedin, setLoggedin] = useState(false);
 
-
-
-  useEffect(() => {
-    
-        localStorage.getItem("racacoonie-auth-token") ? setLoggedin(true) : setLoggedin(false) 
-    },
-
-  [loggedin])
+  useMemo(() => {
+    var authToken = localStorage.getItem("racacoonie-auth-token");
+        if (authToken) {
+          setLoggedin(true)
+        }
+  }, [])
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -57,7 +56,8 @@ function ResponsiveAppBar() {
   }
 
   const handleLogout = (e) => {
-    console.log("happy!!!")
+    e.preventDefault();
+    handleSignOut();
   }
 
   if (localStorage.getItem("racacoonie-auth-token")) {
@@ -165,7 +165,7 @@ function ResponsiveAppBar() {
                   onClose={handleCloseUserMenu}
                 >
                   <MenuItem component={Link} to="/Profile">Profile</MenuItem>
-                  <MenuItem component={Link} to="/logout">Logout</MenuItem>            </Menu>
+                  <MenuItem component={Link} to="/logout" onClick={handleLogout}>Logout</MenuItem>            </Menu>
               </Box>
             </Toolbar>
           </Container>

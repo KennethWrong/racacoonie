@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
@@ -9,19 +9,19 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import GoogleIcon from '@mui/icons-material/Google';
 import Typewriter from "typewriter-effect";
 import {handleSignOut, inMemoryPersistenceLogin, signInWithGoogle} from '../components/firebase'
+import { useNavigate } from 'react-router-dom'; // version 5.2.0
 
-function Login() {
-    const [loggedin, setLoggedin] = useState(false);
+function Login({loggedin, setLoggedin}) {
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
+    useMemo(() => {
         // storing input name
         var authToken = localStorage.getItem("racacoonie-auth-token");
         if (authToken) {
             setLoggedin(true);
         }
         
-      }, [loggedin]);// Navbar and routing on first open
+      }, []);// Navbar and routing on first open
 
 
     const handleSignInWithGoogle = async (e) => {
@@ -30,6 +30,7 @@ function Login() {
         var user = await signInWithGoogle();
         if(user) {
             setLoggedin(true);
+            
         }
         setLoading(false);
         
