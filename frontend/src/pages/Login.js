@@ -9,19 +9,29 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import GoogleIcon from '@mui/icons-material/Google';
 import Typewriter from "typewriter-effect";
 import {handleSignOut, inMemoryPersistenceLogin, signInWithGoogle} from '../components/firebase'
+import { Navigate, useNavigate} from 'react-router-dom'
+import {useMemo} from 'react'
+
 
 function Login() {
     const [loggedin, setLoggedin] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [hi, sethi] = useState(false)
+    const navigate = useNavigate();
 
-    useEffect(() => {
+    
+
+
+    useMemo(() => {
         // storing input name
         var authToken = localStorage.getItem("racacoonie-auth-token");
+
+        
         if (authToken) {
             setLoggedin(true);
         }
         
-      }, [loggedin]);// Navbar and routing on first open
+      }, []);// Navbar and routing on first open
 
 
     const handleSignInWithGoogle = async (e) => {
@@ -30,8 +40,9 @@ function Login() {
         var user = await signInWithGoogle();
         if(user) {
             setLoggedin(true);
+            setLoading(false);
+            return navigate("/")
         }
-        setLoading(false);
         
     }
     
@@ -95,7 +106,6 @@ function Login() {
                 </div>
             </Grid>
             <Grid item xs={3}>
-                {!loggedin?
                     <LoadingButton
                     size="large"
                     onClick={handleSignInWithGoogle}
@@ -106,20 +116,6 @@ function Login() {
                   >
                     <span>Log In With Google</span>
                   </LoadingButton>
-                :
-
-                <LoadingButton
-                    size="large"
-                    onClick={handleSignOutButton}
-                    endIcon={<LogoutIcon />}
-                    loading={loading}
-                    loadingPosition="end"
-                    variant="contained"
-                  >
-                    <span>Log out</span>
-                  </LoadingButton>
-
-                }
             </Grid>   
             
         </Grid> 

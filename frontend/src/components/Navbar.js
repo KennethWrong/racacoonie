@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Navigate, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 
 const pages = ['Products', 'Pricing', 'Blog'];
@@ -27,12 +27,12 @@ function ResponsiveAppBar() {
 
 
 
-  useEffect(() => {
+  useMemo(() => {
     
         localStorage.getItem("racacoonie-auth-token") ? setLoggedin(true) : setLoggedin(false) 
     },
 
-  [loggedin])
+  [])
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -255,7 +255,7 @@ function ResponsiveAppBar() {
     
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
-                    <MenuItem component={Link} to="/login">Login</MenuItem>
+                    <MenuItem href="/login">Login</MenuItem>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}

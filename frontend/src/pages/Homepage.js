@@ -3,34 +3,30 @@ import { Link, Navigate } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import Dropdownbar from "../components/Dropdownbar"
 import { useState } from "react";
-import { useEffect } from "react";
+import { useMemo } from "react";
 
 
 
 const Homepage = () => {
     const [loggedin, setLoggedin] = useState(false);
+    const [hi, sethi] = useState(false)
 
-    useEffect(() => {
-        // storing input name
-        var authToken = localStorage.getItem("racacoonie-auth-token");
-        if (authToken) {
-            setLoggedin(true);
-        }
+    // useMemo(() => {
+    //   var authToken = localStorage.getItem("racacoonie-auth-token");
+
+    //     // storing input name
+    //     if (authToken) {
+    //         setLoggedin(true);
+    //     }
         
-      }, []);// Navbar and routing on first open
+    //   }, []);// Navbar and routing on first open
 
-      if (loggedin) {
         return (
             <div>
-              <p>Hi</p>
               <Dropdownbar></Dropdownbar>
             </div>
           );
-      } else {
-        return (
-            <Navigate to="/login" replace /> 
-        )
-      }
+  
       
   
 };

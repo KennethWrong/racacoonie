@@ -13,6 +13,8 @@ import { tableBodyClasses } from "@mui/material";
 import { useEffect } from "react";
 import FormHelperText from '@mui/material/FormHelperText';
 import axios from "axios";
+import TextField from '@mui/material/TextField';
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -62,18 +64,19 @@ export default function Dropdownbar() {
   const [ingredient, setingredient] = useState([]);
   const [minutes, setminutes] = useState("");
   const [tags, setTags] = useState([]);
-
-  useEffect(() => {
-    fetch()
-      .then((resp) => {
-        resp.json()
-      })
-      .then((resp) => {
-        setdbIngredient(resp.ingredients);
-        setdbMinutes(resp.minutes);
-        setdbTags(resp.tags);
-      });
-  }, []);
+  const [searchbar, setsearchbar] = useState("");
+ 
+  // useEffect(() => {
+  //   fetch()
+  //     .then((resp) => {
+  //       resp.json()
+  //     })
+  //     .then((resp) => {
+  //       setdbIngredient(resp.ingredients);
+  //       setdbMinutes(resp.minutes);
+  //       setdbTags(resp.tags);
+  //     });
+  // }, []);
 
   const handleChange = (event) => {
     const {
@@ -109,13 +112,42 @@ export default function Dropdownbar() {
     setTags(value);
   };
 
-  const handleButtonChange = () => {
-    console.log(personName);
+  const onClickButton = () => {
+    console.log(
+      {
+        "ingredients": ingredient,
+        "minutes" : minutes,
+        "tags" : tags,
+        "search": searchbar
+      }
+    )
   };
+
+  const handleSearchChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setsearchbar(value);
+    console.log(searchbar)
+  }
+
 
   return (
     <div>
-      <FormControl sx={{ m: 1, width: 190 }}>
+      <Box
+      sx={{
+        pt: 5,
+        pb: 2,
+        mx: 40,
+        textalign: 'center',
+        width: 645,
+        maxWidth: '100%',
+      }}
+    >
+      <TextField 
+      onChange={handleSearchChange} fullWidth label="Search" id="fullWiwkdth" />
+    </Box>
+      <FormControl sx={{ m: 1, width: 300 }}>
         <InputLabel id="demo-multiple-chip-label">Ingredients</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
@@ -190,12 +222,14 @@ export default function Dropdownbar() {
           ))}
         </Select>
       </FormControl>
+      <div class="p-5">
       <button
-        onClick={handleButtonChange}
-        class="mt-4 text-gray-900 bg-blue-200 border border-black-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-semi text-sm px-5 py-2.5 mr-2 mb-2 mx-auto dark:bg-black dark:text-white dark:border-white-100 dark:hover:bg-gray-700 dark:hover:border-black-600 dark:focus:ring-gray-700"
+        onClick={onClickButton}
+        class="mx-auto w-1/2 mt-5 rounded-full py-5 text-gray-900 bg-blue-200 border border-black-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-semi text-sm px-5 py-4 dark:bg-black dark:text-white dark:border-white-100 dark:hover:bg-gray-700 dark:hover:border-black-600 dark:focus:ring-gray-700"
       >
-        Submit
+        Submit 
       </button>
+      </div>
     </div>
   );
 }
