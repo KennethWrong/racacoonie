@@ -4,13 +4,9 @@ import Login from './pages/Login';
 import React, { useState, useEffect, useMemo } from 'react';
 import Homepage from './pages/Homepage';
 import NavbarComponent from './components/Navbar';
-<<<<<<< HEAD
 import Recipe from './pages/Recipe'
 import Saved from './pages/Saved'
 
-=======
-import Recipe from './pages/Recipe';
->>>>>>> 1bd775ee1a6f68bc3fea4fb802c797216e866db3
 
 function App () {
   const [loggedin, setLoggedin] = useState(false);
@@ -35,20 +31,12 @@ function App () {
                   : <Login loggedin={loggedin} setLoggedin={setLoggedin} />
 }
               />
-<<<<<<< HEAD
               <Route path='/recipe/:rid' element={<Recipe />}/>
               <Route path='/saved' element={loggedin ? <Saved /> 
                           : <Login loggedin={loggedin} setLoggedin={setLoggedin}/>}/>
             </Routes>
 
           </BrowserRouter>
-=======
-          <Route
-                path='/recipe/:rid' element={<Recipe />}
-              />
-        </Routes>
-      </BrowserRouter>
->>>>>>> 1bd775ee1a6f68bc3fea4fb802c797216e866db3
     </div>
   );
 }
