@@ -14,13 +14,15 @@ cred = credentials.Certificate("./assets/secret.json")
 default_app = initialize_app(cred)
 
 # THIS IS ONLINE
-app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/ken_db?sslmode=verify-full" 
+app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/defaultdb?sslmode=disable" 
+# app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://kenneth:oR5IsoHrDJksC2cecDf0Cg@low-gosling-6971.5xj.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
 # app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/db1?sslmode=disable"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-db = SQLAlchemy(app)
 
 CORS(app)
+db = SQLAlchemy(app)
+
 
 ### Tabels ###
 liked_recipes_table = db.Table('LikedRecipes',
@@ -315,8 +317,7 @@ def get_user_liked():
   user_dic = user.to_dict()
   # print(user_dic)
   liked_recipes = [recipe.to_dict() for recipe in user.liked_recipes]
-  # print(liked_recipes)
-  # return "200"
+  print(liked_recipes)
   return jsonify(liked_recipes), 200
 
 
