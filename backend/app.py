@@ -256,6 +256,35 @@ def init_recipes_db():
 
   
 
+@app.route("/init-db/users", methods=["GET"])
+def init_users_db():
+  try:
+    interaction_csv = "./assets/interactions.csv"
+    data = pd.read_csv(interaction_csv)
+    user_ids = data['user_id'].unique()
+
+    for user_id in user_ids:
+      liked_recipes = data[data['user_id'] == user_id]['recipe_id']
+      user = User(id=int(user_id), username=f"user_{user_id}", email=f"user_{user_id}@email.com")
+      db.session.add(user)
+
+      for recipe_id in liked_recipes:
+        recipe_obj = Recipe.query.get(int(recipe_id))
+        user.liked_recipes.append(recipe_obj)
+          
+    db.session.commit()
+
+  except Exception as e:
+    print(e)
+    db.session.rollback()
+
+    return "Something went wrong", 500
+  
+  
+  finally:
+    db.session.close()
+  
+  return "Users table populated successfully", 200
 
 
 # Get all recipes from database
