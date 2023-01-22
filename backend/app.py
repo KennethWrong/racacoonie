@@ -218,6 +218,30 @@ def init_db():
               region="jp",
               )
 
+  r9 = Recipe(id=8, name="Russian Pelmeni", description="Pelmeni are traditional Russian meat-filled dumplings. Making pelmeni is favorite family pastime in the long winter months. These dumplings are a common convenience food - big batches can be frozen and quickly boiled or fried on demand.", 
+  minutes=180,
+              calories=480.0, total_fat=33.0, sugar=17.0, sodium=31.0,
+              saturated_fat=90.3, n_steps=1, 
+              steps=[
+                'Season chicken breasts on both sides with salt and pepper. Place flour, beaten egg, and panko crumbs into separate shallow dishes. Coat chicken breasts in flour, shaking off any excess; dip into egg, and then press into panko crumbs until well coated on both sides.',
+                'Heat oil in a large skillet over medium-high heat. Place chicken in the hot oil, and fry until golden brown, 3 or 4 minutes per side. Transfer to a paper towel-lined plate to drain.'
+
+              ],
+              region="ru",
+              )
+
+  r10 = Recipe(id=9, name="Al Kabsa", description="Al kabsa was the first Arabic dish I ever made. It turned out extremely delicious and is a new favorite. Serve with fresh mixed cucumber, carrot, lettuce, and tomato salad — preferably with a little lime vinaigrette. ", 
+  minutes=180,
+              calories=480.0, total_fat=33.0, sugar=17.0, sodium=31.0,
+              saturated_fat=90.3, n_steps=1, 
+              steps=[
+                'Season chicken breasts on both sides with salt and pepper. Place flour, beaten egg, and panko crumbs into separate shallow dishes. Coat chicken breasts in flour, shaking off any excess; dip into egg, and then press into panko crumbs until well coated on both sides.',
+                'Heat oil in a large skillet over medium-high heat. Place chicken in the hot oil, and fry until golden brown, 3 or 4 minutes per side. Transfer to a paper towel-lined plate to drain.'
+
+              ],
+              region="sa",
+              )
+
   db.session.add(r1)
   db.session.add(r2)
   db.session.add(r3)
@@ -226,6 +250,8 @@ def init_db():
   db.session.add(r6)
   db.session.add(r7)
   db.session.add(r8)
+  db.session.add(r9)
+  db.session.add(r10)
 
   eggs = Ingredient(id=0, name="eggs")
   tomato = Ingredient(id=1, name="tomato")
@@ -281,6 +307,15 @@ def init_db():
   r8.ingredients.append(chicken)
   r8.ingredients.append(flour)
   r8.ingredients.append(rice)
+
+  r9.ingredients.append(beef)
+  r9.ingredients.append(butter)
+  r9.ingredients.append(flour)
+
+  r10.ingredients.append(beef)
+  r10.ingredients.append(butter)
+  r10.ingredients.append(flour)
+  r10.ingredients.append(rice)
 
   r2.tags.append(tag1)
 

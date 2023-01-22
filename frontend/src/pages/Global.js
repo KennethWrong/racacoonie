@@ -23,6 +23,8 @@ export default function Global(){
         "jp": [36, 138],
         "ger": [51, 9],
         "ind": [20, 7],
+        "ru": [643, 60],
+        "sa": [25, 45]
     }
 
     const defaultProps = {
