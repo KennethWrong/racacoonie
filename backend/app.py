@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import create_engine
 from firebase_admin import auth, initialize_app, credentials
+from sqlalchemy import func
 from utils import cosine_similarity
 from utils import cosine_similarity_to_all_other_user
 
@@ -20,20 +21,20 @@ default_app = initialize_app(cred)
 
 # THIS IS ONLINE
 # app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/ken_db?sslmode=verify-full" 
-# app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://dan:EfRUhPejLHVWl_HmxrFIQA@eager-dog-6969.5xj.cockroachlabs.cloud:26257/dev?sslmode=verify-full" 
-app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/db1?sslmode=disable"
+app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/defaultdb?sslmode=disable"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-db = SQLAlchemy(app)
 # engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
 
 CORS(app)
+db = SQLAlchemy(app)
+
 
 ### Tabels ###
 liked_recipes_table = db.Table('LikedRecipes',
                             db.Column('recipe_id', db.Integer, db.ForeignKey(
                                 'recipe.id'), primary_key=True),
-                            db.Column('user_id', db.Integer, db.ForeignKey(
+                            db.Column('user_id', db.String(100), db.ForeignKey(
                                 'user.id'), primary_key=True)
                             )
 
@@ -55,7 +56,7 @@ tags_table = db.Table('RecipeTags',
 class Recipe(db.Model, SerializerMixin):
   serialize_only = ('id', 'name', 'description', 'minutes',
                     'calories', 'total_fat', 'sugar', 'sodium', 'saturated_fat',
-                    'n_steps', 'steps')
+                    'n_steps', 'steps', 'region')
   # serialize_rules = ('-ingredients', '-tags') # exluded from serialization.
 
   id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -88,8 +89,8 @@ class Recipe(db.Model, SerializerMixin):
   def get_dict(recipe_obj):
     recipe = recipe_obj.to_dict()
     recipe['users'] = [user.to_dict() for user in recipe_obj.user_ratings]
-    recipe['ingredients'] = [ingred.to_dict()['name'] for ingred in recipe_obj.ingredients]
-    recipe['tags'] = [tag.to_dict()['name'] for tag in recipe_obj.tags]
+    recipe['ingredients'] = [ingred.to_dict() for ingred in recipe_obj.ingredients]
+    recipe['tags'] = [tag.to_dict() for tag in recipe_obj.tags]
 
     return recipe
   
@@ -97,7 +98,7 @@ class User(db.Model, SerializerMixin):
   serialize_only = ('id', 'username', 'email')
   serialize_rules = ('-liked_recipes',)
 
-  id = db.Column(db.Integer, primary_key=True, unique=True)
+  id = db.Column(db.String(100), primary_key=True, unique=True)
   username = db.Column(db.String(1000), nullable=False)
   email = db.Column(db.String(100), unique=True, nullable=True)
 
@@ -130,34 +131,75 @@ def init_db():
   db.drop_all()
   db.create_all()
 
-  # r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15,
-  #             calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
-  #             saturated_fat=0.0, n_steps=5, steps=['make eggs and put tomatoes bruh'])
+  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="This recipe is very delicious and it comes from a lot of generations to come", minutes=15,
+              calories=420.0, total_fat=65.0, sugar=20.0, sodium=690.0,
+              saturated_fat=20, n_steps=5, steps=['make eggs and put tomatoes bruh', 'Ask Barry Wood to come over'],
+              region="cn",
+              )
   
-  # r2 = Recipe(id=1, name="Kenneth's Fried Rice!")
-  # r3 = Recipe(id=2, name="Chicken Lo Mein!")
-  # r4 = Recipe(id=3, name="Qdoba!")
+  r2 = Recipe(id=1, name="Ground Beef Stroganoff Noodles", description="These ground beef stroganoff noodles are a shortcut version of classic beef stroganoff in a one-pan version. The ultimate comfort food with flavorful ground beef, mushrooms, and egg noodles."
+            , minutes=40,
+              calories=700.0, total_fat=77.0, sugar=10.0, sodium=700.0,
+              saturated_fat=10, n_steps=4, 
+              steps=['Melt butter and oil in a skillet over medium-high heat. ', 
+                      'Stir in minced garlic and flour, and cook for 1 minute.',
+                      'Reduce heat to medium, and mix in noodles. Cover with a tight-fitting lid and simmer for 5 minutes.',
+                      'Once noodles are cooked, reduce heat to low, and stir in sour cream. Serve immediately with additional sour cream and green onions or chives if so desired.',
+                      ],
+              region="us",
+              )
 
-  # db.session.add(r1)
-  # db.session.add(r2)
-  # db.session.add(r3)
-  # db.session.add(r4)
+  r3 = Recipe(id=2, name="One Pot Tortellini Bake", description="This main dish comes together in under an hour and the best part, it cooks in one pot. Serve with crusty garlic bread and a nice green salad if desired.", 
+              minutes=40,
+              calories=783.0, total_fat=46.0, sugar=33.0, sodium=69.0,
+              saturated_fat=55, n_steps=5, 
+              steps=['Heat a Dutch oven over medium-high heat. Add ground beef and cook until brown and crumbly, 5 to 10 minutes. Add Italian seasoning, salt, and granulated garlic; mix to combine.', 
+              'Stir in marinara sauce, diced tomatoes with liquid, water, and red wine until well combined. Reduce heat to low; add tortellini and cook until warmed through, about 10 to 15 minutes.',
+              'Meanwhile, preheat the oven to 375 degrees F (190 degrees C).',
+              'Add cream cheese to tortellini mixture and stir gently to blend; sprinkle mozzarella cheese over the surface.',
+              'Bake in the preheated oven until cheese is melted and golden brown, about 15 minutes. Serve immediately.'
+              ],
+              region="it",
+              )
 
-  # ing1 = Ingredient(id=0, name="eggs")
-  # ing2 = Ingredient(id=1, name="tomatoes")
-  # db.session.add(ing1)
-  # db.session.add(ing2)
+  r4 = Recipe(id=3, name="Chicken Fajita Rice Casserole", description="This rice and chicken casserole is very easy to pull together and has a lot of flavor. Don't skip toasting the rice - it is an incredibly easy way to add just a hint of nuttiness and more depth of flavor. Top with shredded Cheddar cheese, sour cream, chopped tomatoes, or whatever topping you prefer.", 
+  minutes=55,
+              calories=256.0, total_fat=5.0, sugar=30.0, sodium=690.0,
+              saturated_fat=23.3, n_steps=5, 
+              steps=['Preheat the oven to 350 degrees F (175 degrees C).', 
+              'Add uncooked rice to a dry saucepan over medium; cook, stirring constantly, until rice is fragrant and no longer translucent, 3 to 4 minutes. Transfer to an ungreased 13- x 9-inch baking dish and stir in cilantro, lime zest, and lime juice; mix until combined.',
+              'Place chicken, bell peppers, onion, fajita seasoning, olive oil, salt, and pepper in a large bowl and toss until chicken and vegetables are evenly coated. Transfer to baking dish and place in an even layer over rice mixture. Pour in chicken broth and cover with aluminum foil.',
+              'Bake in preheated oven until chicken is cooked through and rice is tender, about 45 to 50 minutes.',
+              'Remove from oven, uncover, and top with desired toppings. Serve with lime wedges.'
+              ],
+              region="mx",
+              )
 
-  # tag1 = Tag(id=0, name="vegetarian")
-  # db.session.add(tag1)
+  db.session.add(r1)
+  db.session.add(r2)
+  db.session.add(r3)
+  db.session.add(r4)
 
-  # r1.ingredients.append(ing1)
-  # r1.ingredients.append(ing2)
-  # r1.tags.append(tag1)
+  ing1 = Ingredient(id=0, name="eggs")
+  ing2 = Ingredient(id=1, name="tomatoes")
 
-  # u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
-  # u1.liked_recipes.append(r1)
-  # db.session.add(u1)
+  db.session.add(ing1)
+  db.session.add(ing2)
+
+  tag1 = Tag(id=0, name="vegetarian")
+  db.session.add(tag1)
+
+  r1.ingredients.append(ing1)
+  r1.ingredients.append(ing2)
+  r1.tags.append(tag1)
+
+  u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
+  u2 = User(id=1, username='kenneth', email='Kenneth@gmail.com')
+
+  u1.liked_recipes.append(r1)
+  u2.liked_recipes.append(r3)
+  u2.liked_recipes.append(r4)
+  db.session.add(u1)
 
   db.session.commit()
   return "Databse initalized successfully", 200
@@ -305,6 +347,23 @@ def getAllUsers():
   except Exception as exception:
     return f"{exception}"
 
+@app.route("/user/<string:id>", methods=['GET'])
+def get_user_by_id(id):
+  try:
+    user = User.query.filter_by(id = id).first()
+
+    if not user:
+      return {'message':'user not found'}, 404
+    user_dict = user.to_dict()
+
+    user_dict['liked_recipes'] = [recipe.to_dict() for recipe in user.liked_recipes]
+
+
+    return jsonify({"user": user_dict}), 200
+
+  except Exception as exception:
+    return f"{exception}"
+
 @app.route("/recipe/all", methods=['GET'])
 def getAllRecipes():
   try:
@@ -322,7 +381,9 @@ def get_specific_recipe(recipe_id):
     recipe = Recipe.query.filter_by(id = recipe_id).first()
     if recipe:
       recipe_dic = recipe.to_dict()
+      recipe_dic['ingredients'] = [i.to_dict() for i in recipe.ingredients]
       print(recipe_dic)
+      recipe_dic['steps'] = parse_step_to_list(recipe_dic['steps'])
       return jsonify({'recipe': recipe_dic}), 200
     else:
       return jsonify({'recipe': None}), 404
@@ -332,9 +393,9 @@ def get_specific_recipe(recipe_id):
 @app.route("/ingredient/all", methods=['GET'])
 def getAllIngredients():
   try:
-    ingredients = [ingred.to_dict()['name'] for ingred in Ingredient.query.all()]
+    ingredients = [ingred.to_dict() for ingred in Ingredient.query.all()]
   
-    return jsonify({"recipes": ingredients}), 200
+    return jsonify({"ingredients": ingredients}), 200
 
   except Exception as exception:
     return f"{exception}", 500
@@ -342,9 +403,9 @@ def getAllIngredients():
 @app.route("/tag/all", methods=['GET'])
 def getAllTags():
   try:
-    tags = [tag.to_dict()['name'] for tag in Tag.query.all()]
+    tags = [tag.to_dict() for tag in Tag.query.all()]
   
-    return jsonify({"recipes": tags}), 200
+    return jsonify({"tags": tags}), 200
 
   except Exception as exception:
     return f"{exception}", 500
@@ -352,9 +413,39 @@ def getAllTags():
 #Get recipe with filter settings
 @app.route('/recipe/filter', methods=['POST'])
 def get_recipe_with_filter():
-  # get specific recipe from DB 
-  return "200"
+  req = request.json
+  print(req)
+  minutes = req["minutes"]
+  tags = req["tags"]
+  search_phrase = req["search"]
+  ingredients = req["ingredients"]
 
+  recipes = Recipe.query.filter_by()
+
+  if minutes:
+    recipes = recipes.filter(Recipe.minutes <  minutes)
+  
+  if search_phrase and search_phrase != "":
+    recipes = recipes.filter(func.lower(Recipe.name).contains(search_phrase.lower()))
+  
+  if  tags and len(tags) != 0:
+    for t in tags:
+      recipes = recipes.filter(func.lower(Recipe.tags).contains(t.lower()))
+  
+  if ingredients and len(ingredients) != 0:
+    for i in ingredients:
+      recipes = recipes.filter(Recipe.ingredients.contains(i.lower()))
+  
+  recipe_list = [r.to_dict() for r in recipes]
+  
+  print(recipe_list)
+
+  return jsonify(recipe_list)
+
+@app.route('/recipe/create', methods=['POST'])
+def create_recipe():
+  # Write to database with user recipe
+  return "200"
 
 @app.route('/recommend/users/<int:user_id>', methods=['GET'])
 def recommend_other_users(user_id):
@@ -402,9 +493,89 @@ def recommend_other_users(user_id):
 def signup():
     req = request.json
     uid = req['uid']
-    custom_token = auth.create_custom_token(uid)
+    name = req['name']
+    email = req['email']
+    custom_token = uid
+    user = User.query.filter_by(id = uid).first()
+
+    if not user:
+      new_user = User(id=uid, username=name, email=email)
+      db.session.add(new_user)
+      db.session.commit()
 
     return f"{custom_token}"
+
+# Create a post request with
+# header['authorization'] = racacoonie-auth-token
+# {'rid': recipe_id}
+@app.route('/recipe/like', methods=["POST"])
+def like_recipe():
+  req = request.json
+  rid = req['rid']
+  uid = request.headers['authorization']
+  user = get_user_by_id_helper(uid)
+
+  recipe = get_recipe_by_id_helper(rid)
+
+  if not recipe:
+    return "recipe not found", 404
+
+  user.liked_recipes.append(recipe)
+  user_dict = user.to_dict()
+  db.session.commit()
+  return jsonify(user_dict), 200
+
+@app.route('/user/liked', methods=["GET"])
+def get_user_liked():
+  uid = request.headers['authorization']
+  user = User.query.filter_by(id=uid).first()
+  if not user:
+    print('Not found')
+    return "User not found", 404
+  user_dic = user.to_dict()
+  # print(user_dic)
+  liked_recipes = [recipe.to_dict() for recipe in user.liked_recipes]
+  print(liked_recipes)
+  return jsonify(liked_recipes), 200
+
+
+
+# Create a post request with
+# header['authorization'] = racacoonie-auth-token
+# {'rid': recipe_id}
+@app.route('/recipe/unlike', methods=["POST"])
+def unlike_recipe():
+  req = request.json
+  rid = req['rid']
+  uid = request.headers['authorization']
+  user = get_user_by_id_helper(uid)
+
+  recipe = get_recipe_by_id_helper(rid)
+
+  if not recipe:
+    return "recipe not found", 404
+
+  user.liked_recipes.remove(recipe)
+  user_dict = user.to_dict()
+  db.session.commit()
+  return jsonify(user_dict), 200
+
+def get_user_by_id_helper(uid):
+  user = User.query.filter_by(id=uid).first()
+  print(user.to_dict())
+  return user
+
+def get_recipe_by_id_helper(rid):
+  recipe = Recipe.query.filter_by(id=rid).first()
+  return recipe
+
+def parse_step_to_list(steps):
+  if not steps or steps == "":
+    return steps
+  
+  steps = steps[1:-1].split(",")
+  steps = [s[1:-1] for s in steps]
+  return steps
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)), debug=True)

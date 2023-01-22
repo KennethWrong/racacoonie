@@ -1,28 +1,26 @@
-import React from "react";
-import { Link, Navigate } from "react-router-dom";
-import { useTheme } from '@mui/material/styles';
-import Dropdownbar from "../components/Dropdownbar"
-import { useState, useMemo } from "react";
-import { useEffect } from "react";
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 
+import Dropdownbar from '../components/Dropdownbar';
+import RecipeBoard from '../components/RecipeBoard';
+import './Homepage.css';
 
+const Homepage = ({ loggedin, setLoggedin }) => {
+  return (
+    <div>
 
-const Homepage = ({loggedin, setLoggedin}) => {
+      {loggedin
+        ? (
+          <>
+            <p>Hi</p>
+            <Dropdownbar />
+            <RecipeBoard />
+          </>
+          )
 
-      return (
-        <div>
-          {loggedin?
-          <div>
-          <p>Hi</p>
-          <Dropdownbar></Dropdownbar>
-        </div> :
-
-        <Navigate to="/login" />
-          }
-        </div>
-      )
-      
-  
+        : <Navigate to='/login' />}
+    </div>
+  );
 };
 
 export default Homepage;
