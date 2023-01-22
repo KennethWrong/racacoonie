@@ -247,18 +247,18 @@ def get_recipe_with_filter():
   recipes = Recipe.query.filter_by()
 
   if minutes:
-    recipes = recipes.filter(Recipe.minutes <  minutes)
+    recipes = recipes.filter(Recipe.minutes < minutes)
   
   if search_phrase and search_phrase != "":
     recipes = recipes.filter(func.lower(Recipe.name).contains(search_phrase.lower()))
   
-  if  tags and len(tags) != 0:
+  if tags and len(tags) != 0:
     for t in tags:
-      recipes = recipes.filter(func.lower(Recipe.tags).contains(t.lower()))
+      recipes = recipes.filter(func.lower(Recipe.tags).contains(t["name"].lower()))
   
   if ingredients and len(ingredients) != 0:
     for i in ingredients:
-      recipes = recipes.filter(Recipe.ingredients.contains(i.lower()))
+      recipes = recipes.filter(Recipe.ingredients.contains(i['id'].lower()))
   
   recipe_list = [r.to_dict() for r in recipes]
   

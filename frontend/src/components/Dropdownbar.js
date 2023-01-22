@@ -17,6 +17,8 @@ import TextField from '@mui/material/TextField';
 
 import IngredientsDropdown from './IngredientsDropdown';
 import TagsDropdown from './TagsDropdown';
+import { getAllIngredients, getAllTags } from '../api/api';
+import Dropdown from './Dropdown';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -42,15 +44,31 @@ function getStyles (name, personName, theme) {
   };
 }
 
-export default function Dropdownbar () {
+export default function Dropdownbar (props) {
   const theme = useTheme();
+
+  const [uniqueIngredients, setUniqueIngredients] = useState([]);
+  const [uniqueTags, setUniqueTags] = useState([]);
 
   const [ingredients, setIngredients] = useState([]);
   const [minutes, setminutes] = useState('');
   const [tags, setTags] = useState([]);
-  const [searchbar, setsearchbar] = useState('');
+  const [searchbar, setSearchBar] = useState('');
+
+  useEffect(() => {
+    getAllIngredients().then((res) => {
+      setUniqueIngredients(res.data.ingredients);
+      // console.log(res.data.ingredients);
+    }).catch(e => { console.log(e); });
+
+    getAllTags().then((res) => {
+      setUniqueTags(res.data.tags);
+      // console.log(res.data.tags);
+    }).catch(e => { console.log(e); });
+  }, []);
 
   const getRecipeByFilter = (e) => {
+    console.log('here');
     e.preventDefault();
     try {
       console.log(
@@ -68,7 +86,8 @@ export default function Dropdownbar () {
         search: searchbar
       }).then(
         (res) => {
-          console.log(res);
+          console.log(res.data.recipes);
+          props.setRecipes(res.data.recipes);
         }
       );
     } catch (e) {
@@ -76,132 +95,36 @@ export default function Dropdownbar () {
     }
   };
 
-  // const handleChangeIngredient = (event) => {
-  //   const {
-  //     target: { value }
-  //   } = event;
-  //   setingredient(
-  //     // On autofill we get a stringified value.
-  //     typeof value === 'string' ? value.split(',') : value
-  //   );
-  // };
-
-  const handleChangeMinutes = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setminutes(value);
-  };
-
-  const handleChangeIngredients = (event) => {
-    setIngredients(prevIngredients => {
-      const newIngredients = [...prevIngredients];
-      newIngredients.push(event.target.value);
-      return newIngredients;
-    });
-  };
-
-  const handleChangeTags = (event) => {
-    setTags(prevTags => {
-      const newTags = [...prevTags];
-      newTags.push(event.target.value);
-      return newTags;
-    });
-  };
-
-  const onClickButton = () => {
-    console.log(
-      {
-        ingredients: ingredients,
-        minutes: minutes,
-        tags: tags,
-        search: searchbar
-      }
-    );
+  const handleMinutesChange = (event) => {
+    setminutes(event.target.value);
   };
 
   const handleSearchChange = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setsearchbar(value);
+    setSearchBar(event.target.value);
+  };
+
+  const [hideDropdown, setHideDropdown] = useState(false);
+  const toggleDropdown = () => {
+    setHideDropdown(prevHideDropdown => !prevHideDropdown);
   };
 
   return (
-    <div className='filters-container'>
-      <Box
-        sx={{
-          pt: 5,
-          pb: 2,
-          mx: 40,
-          textalign: 'center',
-          width: 645,
-          maxWidth: '100%'
-        }}
-      >
-        <IngredientsDropdown changeHandler={handleChangeIngredients} />
-        <TagsDropdown selectedTags={tags} handleChangeTags={handleChangeTags} />
+    <div>
+      <button className='toggle-button' onClick={toggleDropdown}>Toggle</button>
+      {hideDropdown
+        ? (
+          <>
+            <div className='filter-container'>
+              <Dropdown className='dropdown' name='Ingredients:' items={uniqueIngredients} selected={ingredients} setState={setIngredients} />
+              <Dropdown className='dropdown' name='Tags:' items={uniqueTags} selected={tags} setState={setTags} />
+            </div>
+            <input className='search-bar' placeholder='Enter max cook-time (mins)' onChange={handleMinutesChange} />
+          </>
+          )
+        : null}
 
-        <TextField
-          onChange={handleSearchChange} fullWidth label='Search' id='fullWiwkdth'
-        />
-      </Box>
-
-      <FormControl sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel id='demo-simple-select-helper-label'>Minutes</InputLabel>
-        <Select
-          labelId='demo-simple-select-helper-label'
-          id='demo-simple-select-helper'
-          value={minutes}
-          label='Age'
-          onChange={handleChangeMinutes}
-        >
-          <MenuItem value=''>
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={15}>less than 15 min</MenuItem>
-          <MenuItem value={30}>30 min</MenuItem>
-          <MenuItem value={45}>45 min</MenuItem>
-          <MenuItem value={60}>60 min</MenuItem>
-        </Select>
-      </FormControl>
-      {/* <FormControl sx={{ m: 1, width: 190 }}>
-        <InputLabel id='demo-multiple-chip-label'>Tags</InputLabel>
-        <Select
-          labelId='demo-multiple-chip-label'
-          id='demo-multiple-chip'
-          multiple
-          value={tags}
-          onChange={handleChangeTags}
-          input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
-          renderValue={(selected) => (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((value) => (
-                <Chip key={value} label={value} />
-              ))}
-            </Box>
-          )}
-          MenuProps={MenuProps}
-        >
-          {tagsArray.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, personName, theme)}
-            >
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl> */}
-      <div className='p-5'>
-        <button
-          onClick={onClickButton}
-          className='mx-auto w-1/2 mt-5 rounded-full py-5 text-gray-900 bg-blue-200 border border-black-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-semi text-sm px-5 py-4 dark:bg-black dark:text-white dark:border-white-100 dark:hover:bg-gray-700 dark:hover:border-black-600 dark:focus:ring-gray-700'
-        >
-          Submit
-        </button>
-      </div>
+      <input className='search-bar' placeholder='Search Recipe' onChange={handleSearchChange} />
+      <button type='submit' onClick={getRecipeByFilter}>Filter</button>
     </div>
   );
 }

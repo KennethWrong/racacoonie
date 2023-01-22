@@ -1,0 +1,50 @@
+.filter-container {
+  display: flex;
+}
+.filter-container-column {
+  display: block;
+}
+
+.dropdown {
+  flex: 1;
+}
+
+.toggle-button {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.item-bubble-container {
+  display: block;
+  flex-direction: row;
+  height: 200px;
+  overflow-y: scroll;
+}
+
+.item-bubble {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  flex: 1;
+  padding: 1px;
+
+  width: 50px;
+
+  border: 1px solid;
+  border-radius: 500px;
+  background-color: blueviolet;
+}
+
+.search-bar {
+  width: 80%;
+  margin: 10px;
+  height: 50px;
+  
+  border-radius: 5px;
+  padding: 5px;
+
+  font-size: large;
+  font-family: 'Playfair Display', serif;
+}

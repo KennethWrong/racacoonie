@@ -2,10 +2,11 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 
 import Dropdownbar from '../components/Dropdownbar';
-import RecipeBoard from '../components/RecipeBoard';
+import RecipeCards from '../components/RecipeCards';
 import './Homepage.css';
 
 const Homepage = ({ loggedin, setLoggedin }) => {
+  const [recipes, setRecipes] = useState([]);
   return (
     <div>
 
@@ -13,8 +14,8 @@ const Homepage = ({ loggedin, setLoggedin }) => {
         ? (
           <>
             <p>Hi</p>
-            <Dropdownbar />
-            <RecipeBoard />
+            <Dropdownbar recipes={recipes} setRecipes={setRecipes} />
+            <RecipeCards recipes={recipes} />
           </>
           )
 
