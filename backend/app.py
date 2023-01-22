@@ -133,7 +133,7 @@ def init_db():
 
   r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="This recipe is very delicious and it comes from a lot of generations to come", minutes=15,
               calories=420.0, total_fat=65.0, sugar=20.0, sodium=690.0,
-              saturated_fat=20, n_steps=5, steps=['make eggs and put tomatoes bruh', 'Ask Barry Wood to come over'],
+              saturated_fat=20, n_steps=4, steps=['First stir the eggs up', 'Cut up the tomatoes', 'Stir fry the tomato and the eggs', 'Season and enjoy'],
               region="cn",
               )
   
@@ -174,11 +174,58 @@ def init_db():
               ],
               region="mx",
               )
+  
+  r5 = Recipe(id=4, name="Slow Cooker Butter Chicken", description="Butter chicken is one of my favorite Indian dishes. It's easy to prep for the slow cooker in the morning to come home to the wonderful aroma of warm Indian spices... I love it! Serve with basmati rice and warm naan bread.", 
+  minutes=180,
+              calories=480.0, total_fat=33.0, sugar=17.0, sodium=31.0,
+              saturated_fat=90.3, n_steps=5, 
+              steps=['Preheat the oven to 350 degrees F (175 degrees C).', 
+              'Add uncooked rice to a dry saucepan over medium; cook, stirring constantly, until rice is fragrant and no longer translucent, 3 to 4 minutes. Transfer to an ungreased 13- x 9-inch baking dish and stir in cilantro, lime zest, and lime juice; mix until combined.',
+              'Place chicken, bell peppers, onion, fajita seasoning, olive oil, salt, and pepper in a large bowl and toss until chicken and vegetables are evenly coated. Transfer to baking dish and place in an even layer over rice mixture. Pour in chicken broth and cover with aluminum foil.',
+              'Bake in preheated oven until chicken is cooked through and rice is tender, about 45 to 50 minutes.',
+              'Remove from oven, uncover, and top with desired toppings. Serve with lime wedges.'
+              ],
+              region="ind",
+              )
+  
+  r6 = Recipe(id=5, name="Saucy Sriracha Franks", description="iA little heat, a little sweet, and a little Asian. Serve with toothpicks, and you have a one-bite appetizer that is so very simple to make.", 
+  minutes=20,
+              calories=480.0, total_fat=33.0, sugar=17.0, sodium=31.0,
+              saturated_fat=90.3, n_steps=1, 
+              steps=['Mix ketchup, soy sauce, vinegar, sriracha, brown sugar, sesame oil, ginger, and garlic in a saucepan and bring to a simmer over low heat. Add franks and heat until warm, about 5 minutes. Serve with toothpicks.'
+              ],
+              region="ger",
+              )
+  
+  r7 = Recipe(id=6, name="Traditional Sauerbraten", description="For this sauerbraten, I found two slightly different handwritten versions of my Grandmother's recipe. Born in Nekkar am Rhein in 1904", 
+  minutes=20,
+              calories=480.0, total_fat=33.0, sugar=17.0, sodium=31.0,
+              saturated_fat=90.3, n_steps=1, 
+              steps=['Mix ketchup, soy sauce, vinegar, sriracha, brown sugar, sesame oil, ginger, and garlic in a saucepan and bring to a simmer over low heat. Add franks and heat until warm, about 5 minutes. Serve with toothpicks.'
+              ],
+              region="ger",
+              )
+
+  r8 = Recipe(id=7, name="Chicken Katsu", description="Chicken katsu is Japanese-style fried chicken. This is my family recipe and can also be used to make tonkatsu by using pork cutlets instead of chicken. Serve with white rice and tonkatsu sauce.", 
+  minutes=20,
+              calories=480.0, total_fat=33.0, sugar=17.0, sodium=31.0,
+              saturated_fat=90.3, n_steps=1, 
+              steps=[
+                'Season chicken breasts on both sides with salt and pepper. Place flour, beaten egg, and panko crumbs into separate shallow dishes. Coat chicken breasts in flour, shaking off any excess; dip into egg, and then press into panko crumbs until well coated on both sides.',
+                'Heat oil in a large skillet over medium-high heat. Place chicken in the hot oil, and fry until golden brown, 3 or 4 minutes per side. Transfer to a paper towel-lined plate to drain.'
+
+              ],
+              region="jp",
+              )
 
   db.session.add(r1)
   db.session.add(r2)
   db.session.add(r3)
   db.session.add(r4)
+  db.session.add(r5)
+  db.session.add(r6)
+  db.session.add(r7)
+  db.session.add(r8)
 
   ing1 = Ingredient(id=0, name="eggs")
   ing2 = Ingredient(id=1, name="tomatoes")
