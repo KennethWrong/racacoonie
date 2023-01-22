@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Recipe.css';
 import { useNavigate } from 'react-router-dom';
 import SaveButton from "../components/SaveButton";
 
 const RecipeCards = (props) => {
   const navigate = useNavigate();
+  const [showMore, setShowMore] = useState(false);
+
   return (
     <div className='recipe-board'>
       {props.recipes

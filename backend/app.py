@@ -429,24 +429,28 @@ def get_recipe_with_filter():
   recipes = Recipe.query.filter_by()
 
   if minutes:
-    recipes = recipes.filter(Recipe.minutes <  minutes)
+    recipes = recipes.filter(Recipe.minutes < minutes)
   
   if search_phrase and search_phrase != "":
     recipes = recipes.filter(func.lower(Recipe.name).contains(search_phrase.lower()))
   
-  if  tags and len(tags) != 0:
+  if tags and len(tags) != 0:
     for t in tags:
-      recipes = recipes.filter(func.lower(Recipe.tags).contains(t.lower()))
+      check_tag = Tag(id=t['id'], name=t['name'])
+      recipes = recipes.filter(Recipe.tags.contains(check_tag))
   
   if ingredients and len(ingredients) != 0:
     for i in ingredients:
-      recipes = recipes.filter(Recipe.ingredients.contains(i.lower()))
+      ing = Ingredient(id=i['id'], name=i['name'])
+      recipes = recipes.filter(Recipe.ingredients.contains(ing))
   
-  recipe_list = [r.to_dict() for r in recipes]
-  
-  print(recipe_list)
+  if recipes:
+    recipe_list = [r.to_dict() for r in recipes]
+    print(recipe_list)
+    return {"recipes": recipe_list}, 200
 
-  return jsonify(recipe_list)
+
+  return "", 404
 
 @app.route('/recipe/create', methods=['POST'])
 def create_recipe():
