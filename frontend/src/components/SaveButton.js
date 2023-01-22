@@ -6,7 +6,7 @@ import axios from 'axios'
 import { Box } from '@mui/system';
 
 
-export default function SaveButton ({rid, setRefresh, refresh}) {
+export default function SaveButton ({rid}) {
 
     const [liked, setLiked] = useState()
 
@@ -54,10 +54,6 @@ export default function SaveButton ({rid, setRefresh, refresh}) {
 
     const handleUnlikefunction = (e) => {
         e.preventDefault();
-
-        if(refresh !== null) {
-            setRefresh(!refresh);
-        }
 
         const config = {
             headers:{
