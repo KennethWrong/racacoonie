@@ -52,7 +52,6 @@ function Login({loggedin, setLoggedin}) {
                     <Box
                     component="img"
                     sx={{
-                    marginLeft:24,
                     height: 350,
                     width: 350,
                     maxHeight: { xs: 250, md: 250 },
@@ -64,7 +63,7 @@ function Login({loggedin, setLoggedin}) {
                 </Box>
                 <h1
                     className="text-8xl font-bold tracking-wider text-blue-800
-                                transition duration-500 ease-in-out hover:text-red-800 transform hover:-translate-y-1 hover:scale-110 ..."
+                                transition duration-500 ease-in-out hover:text-red-800 transform hover:-translate-y-1 hover:scale-110"
                 >RACACOONIE
                 </h1>
                 <div className="text-5xl font-bold tracking-wider text-blue-800 m-7
