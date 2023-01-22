@@ -79,8 +79,8 @@ class Recipe(db.Model, SerializerMixin):
   def get_dict(recipe_obj):
     recipe = recipe_obj.to_dict()
     recipe['users'] = [user.to_dict() for user in recipe_obj.user_ratings]
-    recipe['ingredients'] = [ingred.to_dict()['name'] for ingred in recipe_obj.ingredients]
-    recipe['tags'] = [tag.to_dict()['name'] for tag in recipe_obj.tags]
+    recipe['ingredients'] = [ingred.to_dict() for ingred in recipe_obj.ingredients]
+    recipe['tags'] = [tag.to_dict() for tag in recipe_obj.tags]
 
     return recipe
   
@@ -193,9 +193,9 @@ def get_specific_recipe(recipe_id):
 @app.route("/ingredient/all", methods=['GET'])
 def getAllIngredients():
   try:
-    ingredients = [ingred.to_dict()['name'] for ingred in Ingredient.query.all()]
+    ingredients = [ingred.to_dict() for ingred in Ingredient.query.all()]
   
-    return jsonify({"recipes": ingredients}), 200
+    return jsonify({"ingredients": ingredients}), 200
 
   except Exception as exception:
     return f"{exception}", 500
@@ -203,9 +203,9 @@ def getAllIngredients():
 @app.route("/tag/all", methods=['GET'])
 def getAllTags():
   try:
-    tags = [tag.to_dict()['name'] for tag in Tag.query.all()]
+    tags = [tag.to_dict() for tag in Tag.query.all()]
   
-    return jsonify({"recipes": tags}), 200
+    return jsonify({"tags": tags}), 200
 
   except Exception as exception:
     return f"{exception}", 500
