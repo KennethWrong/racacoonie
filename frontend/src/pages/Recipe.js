@@ -41,16 +41,16 @@ export default function Recipe () {
                     </div>
                     <div>
                         <h1 className="text-4xl m-9 font-black">Description</h1>
-                        <p>
+                        <p className="font-bold">
                             {recipe['description']}
                         </p>
                     </div>
                     <div>
-                        <h1 className="text-4xl m-9 font-black">Description</h1>
-                        <ol className="list-decimal">
-                        {recipe['steps'].map((step, index) => (
-                            <li key={index}>{step}</li>
-                        ))}
+                        <h1 className="text-4xl m-9 font-black">Steps</h1>
+                        <ol className="pl-5 mt-2 space-y-1 list-decimal list-inside">
+                            {recipe['steps']?recipe['steps'].map((step, index) => (
+                                <li key={index} className="font-bold text-xl m-2">{step}</li>
+                            )): "NaN"}
                         </ol>
                     </div>
                 </div> :

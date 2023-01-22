@@ -37,16 +37,6 @@ function Login({loggedin, setLoggedin}) {
         setLoading(false);
         
     }
-    
-    const handleSignOutButton = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setTimeout(() => {
-            handleSignOut();
-            setLoggedin(false);
-            setLoading(false);
-        }, 1000);
-    }
 
     return (
         <Grid

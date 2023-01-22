@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Homepage from './pages/Homepage';
 import NavbarComponent from './components/Navbar';
 import Recipe from './pages/Recipe'
+import Saved from './pages/Saved'
 
 
 function App () {
@@ -30,9 +31,11 @@ path='/login' element={
                           : <Login loggedin={loggedin} setLoggedin={setLoggedin} />
 }
               />
-              <Route
-path='/recipe/:rid' element={<Recipe />}/>
+              <Route path='/recipe/:rid' element={<Recipe />}/>
+              <Route path='/saved' element={loggedin ? <Saved /> 
+                          : <Login loggedin={loggedin} setLoggedin={setLoggedin}/>}/>
             </Routes>
+
           </BrowserRouter>
     </div>
   );
