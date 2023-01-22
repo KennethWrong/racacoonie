@@ -266,11 +266,17 @@ def init_recipes_db():
     for i, row in data.iterrows():
       ingredients = literal_eval(row['ingredients'])
       tags = literal_eval(row['tags'])
+      nutrition = literal_eval(row['nutrition'])
       recipe = Recipe(
         id=row['id'],
         name=str(row['name']),
         description=str(row['description']),
         minutes=int(row['minutes']),
+        calories=float(nutrition[0]),
+        total_fat=float(nutrition[1]),
+        sugar=float(nutrition[2]),
+        sodium=float(nutrition[3]), 
+        saturated_fat=float(nutrition[4]),
         n_steps=int(row['n_steps']),
         steps=str(row['steps']),
         region=str(row['region'])
