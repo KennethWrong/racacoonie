@@ -12,6 +12,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PublicIcon from '@mui/icons-material/Public';
 import { Navigate, Link } from 'react-router-dom';
 import { useState, useMemo, useEffect } from 'react';
 
@@ -134,6 +135,9 @@ function ResponsiveAppBar ({ loggedin, setLoggedin }) {
             <Box sx={{ flexGrow: 0 }}>
               <IconButton onClick={handleLogout}>
                 <LogoutIcon />
+              </IconButton>
+              <IconButton component={Link} to="/global">
+                <PublicIcon />
               </IconButton>
               <IconButton component={Link} to='/saved'>
                 <FavoriteBorderIcon />
