@@ -59,11 +59,13 @@ const handleSignOut = () => {
 }
 
   const generateWebToken = async (user) => {
+    console.log(user)
     await axios.post("http://localhost:8000/signup", 
             {
               uid: user.uid,
+              name: user.displayName,
+              email: user.email,
             }).then((res) => {
-              console.log(res)
               localStorage.setItem("racacoonie-auth-token", res["data"])
             })
     

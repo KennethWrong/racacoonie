@@ -13,8 +13,6 @@ import { useNavigate } from 'react-router-dom'; // version 5.2.0
 
 function Login({loggedin, setLoggedin}) {
     const [loading, setLoading] = useState(false);
-    const [hi, sethi] = useState(false)
-    const navigate = useNavigate();
 
     useMemo(() => {
         // storing input name

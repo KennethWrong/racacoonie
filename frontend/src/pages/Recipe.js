@@ -10,7 +10,7 @@ export default function Recipe () {
     useEffect(() => {
         getRecipe()
     }, [])
-    
+
     const getRecipe = async () => {
         try{
             axios.get(`http://localhost:8000/recipe/${rid}`).then(
