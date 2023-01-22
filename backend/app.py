@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from firebase_admin import auth, initialize_app, credentials
+from sqlalchemy import func
 
 app = Flask(__name__)
 
@@ -25,7 +26,7 @@ CORS(app)
 liked_recipes_table = db.Table('LikedRecipes',
                             db.Column('recipe_id', db.Integer, db.ForeignKey(
                                 'recipe.id'), primary_key=True),
-                            db.Column('user_id', db.Integer, db.ForeignKey(
+                            db.Column('user_id', db.String(100), db.ForeignKey(
                                 'user.id'), primary_key=True)
                             )
 
@@ -88,7 +89,7 @@ class User(db.Model, SerializerMixin):
   serialize_only = ('id', 'username', 'email')
   serialize_rules = ('-liked_recipes',)
 
-  id = db.Column(db.Integer, primary_key=True, unique=True)
+  id = db.Column(db.String(100), primary_key=True, unique=True)
   username = db.Column(db.String(1000), nullable=False)
   email = db.Column(db.String(100), unique=True, nullable=False)
 
@@ -147,7 +148,11 @@ def init_db():
   r1.tags.append(tag1)
 
   u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
+  u2 = User(id=1, username='kenneth', email='Kenneth@gmail.com')
+
   u1.liked_recipes.append(r1)
+  u2.liked_recipes.append(r3)
+  u2.liked_recipes.append(r4)
   db.session.add(u1)
 
   db.session.commit()
@@ -162,6 +167,23 @@ def getAllUsers():
     users_dicts = [User.get_dict(x) for x in users]
 
     return jsonify({"users": users_dicts}), 200
+
+  except Exception as exception:
+    return f"{exception}"
+
+@app.route("/user/<string:id>", methods=['GET'])
+def get_user_by_id(id):
+  try:
+    user = User.query.filter_by(id = id).first()
+
+    if not user:
+      return {'message':'user not found'}, 404
+    user_dict = user.to_dict()
+
+    user_dict['liked_recipes'] = [recipe.to_dict() for recipe in user.liked_recipes]
+
+
+    return jsonify({"user": user_dict}), 200
 
   except Exception as exception:
     return f"{exception}"
@@ -213,19 +235,106 @@ def getAllTags():
 #Get recipe with filter settings
 @app.route('/recipe/filter', methods=['POST'])
 def get_recipe_with_filter():
-  # get specific recipe from DB 
-  return "200"
+  req = request.json
+  print(req)
+  minutes = req["minutes"]
+  tags = req["tags"]
+  search_phrase = req["search"]
+  ingredients = req["ingredients"]
+
+  recipes = Recipe.query.filter_by()
+
+  if minutes:
+    recipes = recipes.filter(Recipe.minutes <  minutes)
+  
+  if search_phrase and search_phrase != "":
+    recipes = recipes.filter(func.lower(Recipe.name).contains(search_phrase.lower()))
+  
+  if  tags and len(tags) != 0:
+    for t in tags:
+      recipes = recipes.filter(func.lower(Recipe.tags).contains(t.lower()))
+  
+  if ingredients and len(ingredients) != 0:
+    for i in ingredients:
+      recipes = recipes.filter(Recipe.ingredients.contains(i.lower()))
+  
+  recipe_list = [r.to_dict() for r in recipes]
+  
+  print(recipe_list)
+
+  return jsonify(recipe_list)
 
 @app.route('/recipe/create', methods=['POST'])
+def create_recipe():
+  # Write to database with user recipe
+  return "200"
 
 # Return jwt token to front-end 
 @app.route('/signup', methods=["POST"])
 def signup():
     req = request.json
     uid = req['uid']
-    custom_token = auth.create_custom_token(uid)
+    name = req['name']
+    email = req['email']
+    custom_token = uid
+    user = User.query.filter_by(id = uid).first()
+
+    if not user:
+      new_user = User(id=uid, username=name, email=email)
+      db.session.add(new_user)
+      db.session.commit()
 
     return f"{custom_token}"
+
+# Create a post request with
+# header['authorization'] = racacoonie-auth-token
+# {'rid': recipe_id}
+@app.route('/recipe/like', methods=["POST"])
+def like_recipe():
+  req = request.json
+  rid = req['rid']
+  uid = request.headers['authorization']
+  user = get_user_by_id_helper(uid)
+
+  recipe = get_recipe_by_id_helper(rid)
+
+  if not recipe:
+    return "recipe not found", 404
+
+  user.liked_recipes.append(recipe)
+  user_dict = user.to_dict()
+  db.session.commit()
+  return jsonify(user_dict), 200
+
+
+# Create a post request with
+# header['authorization'] = racacoonie-auth-token
+# {'rid': recipe_id}
+@app.route('/recipe/unlike', methods=["POST"])
+def unlike_recipe():
+  req = request.json
+  rid = req['rid']
+  uid = request.headers['authorization']
+  user = get_user_by_id_helper(uid)
+
+  recipe = get_recipe_by_id_helper(rid)
+
+  if not recipe:
+    return "recipe not found", 404
+
+  user.liked_recipes.remove(recipe)
+  user_dict = user.to_dict()
+  db.session.commit()
+  return jsonify(user_dict), 200
+
+def get_user_by_id_helper(uid):
+  user = User.query.filter_by(id=uid).first()
+  return user
+
+def get_recipe_by_id_helper(rid):
+  recipe = Recipe.query.filter_by(id=rid).first()
+  return recipe
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)), debug=True)

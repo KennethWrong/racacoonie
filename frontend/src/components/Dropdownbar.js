@@ -29,24 +29,9 @@ const MenuProps = {
   }
 };
 
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder'
-];
-
 const ingredientsArray = ['Apple', 'Onion', 'Grapes', 'Tea'];
 
 const tagsArray = ['Italian', 'French', 'Easy', 'Boy'];
-
-const minutesArray = ['5 minutes', '10 minutes', '15 minutes', '30 minutes'];
 
 function getStyles (name, personName, theme) {
   return {
@@ -65,17 +50,32 @@ export default function Dropdownbar () {
   const [tags, setTags] = useState([]);
   const [searchbar, setsearchbar] = useState('');
 
-  // useEffect(() => {
-  //   fetch()
-  //     .then((resp) => {
-  //       resp.json()
-  //     })
-  //     .then((resp) => {
-  //       setdbIngredient(resp.ingredients);
-  //       setdbMinutes(resp.minutes);
-  //       setdbTags(resp.tags);
-  //     });
-  // }, []);
+
+  const getRecipeByFilter = (e) => {
+    e.preventDefault();
+    try {
+      console.log(
+        {
+          ingredients: ingredient,
+          minutes: minutes,
+          tags: tags,
+          search: searchbar
+        }
+      );
+      axios.post('http://localhost:8000/recipe/filter', {
+        ingredients: ingredient,
+        minutes: minutes,
+        tags: tags,
+        search: searchbar
+      }).then(
+        (res) => {
+          console.log(res);
+        }
+      );
+    } catch (e) {
+
+    }
+  };
 
   // const handleChangeIngredient = (event) => {
   //   const {
@@ -126,7 +126,6 @@ export default function Dropdownbar () {
       target: { value }
     } = event;
     setsearchbar(value);
-    console.log(searchbar);
   };
 
   return (
@@ -161,9 +160,10 @@ export default function Dropdownbar () {
           <MenuItem value=''>
             <em>None</em>
           </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+          <MenuItem value={15}>less than 15 min</MenuItem>
+          <MenuItem value={30}>30 min</MenuItem>
+          <MenuItem value={45}>45 min</MenuItem>
+          <MenuItem value={60}>60 min</MenuItem>
         </Select>
       </FormControl>
       {/* <FormControl sx={{ m: 1, width: 190 }}>
