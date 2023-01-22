@@ -6,3 +6,4 @@ firebase_admin
 requests
 psycopg2
 SQLAlchemy-serializer
+pandas
