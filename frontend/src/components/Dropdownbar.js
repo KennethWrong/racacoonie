@@ -194,10 +194,10 @@ export default function Dropdownbar () {
           ))}
         </Select>
       </FormControl> */}
-      <div class='p-5'>
+      <div className='p-5'>
         <button
           onClick={onClickButton}
-          class='mx-auto w-1/2 mt-5 rounded-full py-5 text-gray-900 bg-blue-200 border border-black-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-semi text-sm px-5 py-4 dark:bg-black dark:text-white dark:border-white-100 dark:hover:bg-gray-700 dark:hover:border-black-600 dark:focus:ring-gray-700'
+          className='mx-auto w-1/2 mt-5 rounded-full py-5 text-gray-900 bg-blue-200 border border-black-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-semi text-sm px-5 py-4 dark:bg-black dark:text-white dark:border-white-100 dark:hover:bg-gray-700 dark:hover:border-black-600 dark:focus:ring-gray-700'
         >
           Submit
         </button>

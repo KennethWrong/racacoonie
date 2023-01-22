@@ -308,6 +308,18 @@ def like_recipe():
   db.session.commit()
   return jsonify(user_dict), 200
 
+@app.route('/user/liked', methods=["GET"])
+def get_user_liked():
+  uid = request.headers['authorization']
+  user = User.query.filter_by(id=uid).first()
+  user_dic = user.to_dict()
+  # print(user_dic)
+  liked_recipes = [recipe.to_dict() for recipe in user.liked_recipes]
+  # print(liked_recipes)
+  # return "200"
+  return jsonify(liked_recipes), 200
+
+
 
 # Create a post request with
 # header['authorization'] = racacoonie-auth-token
@@ -331,6 +343,7 @@ def unlike_recipe():
 
 def get_user_by_id_helper(uid):
   user = User.query.filter_by(id=uid).first()
+  print(user.to_dict())
   return user
 
 def get_recipe_by_id_helper(rid):
@@ -338,10 +351,11 @@ def get_recipe_by_id_helper(rid):
   return recipe
 
 def parse_step_to_list(steps):
-  if steps == "":
+  if not steps or steps == "":
     return steps
   
   steps = steps[1:-1].split(",")
+  steps = [s[1:-1] for s in steps]
   return steps
 
 if __name__ == '__main__':

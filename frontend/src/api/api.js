@@ -16,6 +16,7 @@ export const getAllTags = async () => {
   });
 };
 
+// export const getRecipe
 export const getAllRecipes = async () => {
   return racaApp.get('/recipe/all', {
     headers: {
