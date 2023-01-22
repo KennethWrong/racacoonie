@@ -1,18 +1,17 @@
 import './App.css';
 import { BrowserRouter, Route, Routes, Navigate, useParams } from 'react-router-dom';
 import Login from './pages/Login';
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
 import Homepage from './pages/Homepage';
 import NavbarComponent from './components/Navbar';
-import Recipe from './pages/Recipe'
-
+import Recipe from './pages/Recipe';
 
 function App () {
   const [loggedin, setLoggedin] = useState(false);
 
   useMemo(() => {
     // storing input name
-    let authToken = localStorage.getItem('racacoonie-auth-token');
+    const authToken = localStorage.getItem('racacoonie-auth-token');
     if (authToken) {
       setLoggedin(true);
     }
@@ -21,19 +20,20 @@ function App () {
   return (
     <div className='App'>
       <BrowserRouter>
-            <NavbarComponent loggedin={loggedin} setLoggedin={setLoggedin} />
-            <Routes>
-              <Route path='/' element={<Homepage loggedin={loggedin} setLoggedin={setLoggedin} />} />
-              <Route
-path='/login' element={
+        <NavbarComponent loggedin={loggedin} setLoggedin={setLoggedin} />
+        <Routes>
+          <Route path='/' element={<Homepage loggedin={loggedin} setLoggedin={setLoggedin} />} />
+          <Route
+                path='/login' element={
                 loggedin ? <Navigate to='/' />
-                          : <Login loggedin={loggedin} setLoggedin={setLoggedin} />
+                  : <Login loggedin={loggedin} setLoggedin={setLoggedin} />
 }
               />
-              <Route
-path='/recipe/:rid' element={<Recipe />}/>
-            </Routes>
-          </BrowserRouter>
+          <Route
+                path='/recipe/:rid' element={<Recipe />}
+              />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

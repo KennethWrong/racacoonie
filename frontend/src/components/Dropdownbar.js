@@ -50,20 +50,19 @@ export default function Dropdownbar () {
   const [tags, setTags] = useState([]);
   const [searchbar, setsearchbar] = useState('');
 
-
   const getRecipeByFilter = (e) => {
     e.preventDefault();
     try {
       console.log(
         {
-          ingredients: ingredient,
+          ingredients: ingredients,
           minutes: minutes,
           tags: tags,
           search: searchbar
         }
       );
       axios.post('http://localhost:8000/recipe/filter', {
-        ingredients: ingredient,
+        ingredients: ingredients,
         minutes: minutes,
         tags: tags,
         search: searchbar
