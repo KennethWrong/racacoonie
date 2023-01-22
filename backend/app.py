@@ -122,9 +122,9 @@ def init_db():
   db.drop_all()
   db.create_all()
 
-  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15,
-              calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
-              saturated_fat=0.0, n_steps=5, steps=['make eggs and put tomatoes bruh'])
+  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="Ibrahim has some big ass eggs, his eggs are tasty and full of tasty egg juices.", minutes=15,
+              calories=42069.0, total_fat=69.0, sugar=420.0, sodium=69.0,
+              saturated_fat=96.024, n_steps=5, steps=['make eggs and put tomatoes bruh', 'Ask Barry Wood to come over'])
   
   r2 = Recipe(id=1, name="Kenneth's Fried Rice!")
   r3 = Recipe(id=2, name="Chicken Lo Mein!")
@@ -205,7 +205,9 @@ def get_specific_recipe(recipe_id):
     recipe = Recipe.query.filter_by(id = recipe_id).first()
     if recipe:
       recipe_dic = recipe.to_dict()
+      recipe_dic['ingredients'] = [i.to_dict() for i in recipe.ingredients]
       print(recipe_dic)
+      recipe_dic['steps'] = parse_step_to_list(recipe_dic['steps'])
       return jsonify({'recipe': recipe_dic}), 200
     else:
       return jsonify({'recipe': None}), 404
@@ -335,6 +337,12 @@ def get_recipe_by_id_helper(rid):
   recipe = Recipe.query.filter_by(id=rid).first()
   return recipe
 
+def parse_step_to_list(steps):
+  if steps == "":
+    return steps
+  
+  steps = steps[1:-1].split(",")
+  return steps
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)), debug=True)
