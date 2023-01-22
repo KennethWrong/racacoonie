@@ -68,7 +68,6 @@ export default function Dropdownbar (props) {
   }, []);
 
   const getRecipeByFilter = (e) => {
-    console.log('here');
     e.preventDefault();
     try {
       console.log(
@@ -86,6 +85,7 @@ export default function Dropdownbar (props) {
         search: searchbar
       }).then(
         (res) => {
+          console.log(res)
           console.log(res.data.recipes);
           props.setRecipes(res.data.recipes);
         }
