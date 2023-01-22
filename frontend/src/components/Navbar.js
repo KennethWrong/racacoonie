@@ -13,23 +13,23 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Navigate, Link } from 'react-router-dom';
-import { useState, useMemo } from 'react';
-import { useEffect } from 'react';
+import { useState, useMemo , useEffect } from 'react';
+
 import { handleSignOut } from './firebase';
 import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 
-function ResponsiveAppBar({loggedin, setLoggedin}) {
+function ResponsiveAppBar ({ loggedin, setLoggedin }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   useMemo(() => {
-    var authToken = localStorage.getItem("racacoonie-auth-token");
-        if (authToken) {
-          setLoggedin(true)
-        }
-  }, [])
+    let authToken = localStorage.getItem('racacoonie-auth-token');
+    if (authToken) {
+      setLoggedin(true);
+    }
+  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -44,32 +44,32 @@ function ResponsiveAppBar({loggedin, setLoggedin}) {
 
   const handleCloseUserMenu = (e) => {
     setAnchorElUser(null);
-    console.log(e.currentTarget)
+    console.log(e.currentTarget);
   };
 
   const handleProfile = (e) => {
     if (true) {
-        return <Navigate to='/login' replace />
+      return <Navigate to='/login' replace />;
     }
-  }
+  };
 
   const handleLogout = (e) => {
     e.preventDefault();
     setLoggedin(false);
     handleSignOut();
-  }
+  };
 
   if (loggedin) {
     return (
-        <AppBar position="static">
-          <Container maxWidth="xl">
+      <AppBar position='static'>
+          <Container maxWidth='xl'>
             <Toolbar disableGutters>
               <DinnerDiningIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
               <Typography
-                variant="h6"
+                variant='h6'
                 noWrap
-                component="a"
-                href="/"
+                component='a'
+                href='/'
                 sx={{
                   mr: 2,
                   display: { xs: 'none', md: 'flex' },
@@ -77,54 +77,54 @@ function ResponsiveAppBar({loggedin, setLoggedin}) {
                   fontWeight: 700,
                   letterSpacing: '.3rem',
                   color: 'inherit',
-                  textDecoration: 'none',
+                  textDecoration: 'none'
                 }}
               >
                 Racacoonie
               </Typography>
-    
+
               <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                 <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
+                  size='large'
+                  aria-label='account of current user'
+                  aria-controls='menu-appbar'
+                  aria-haspopup='true'
                   onClick={handleOpenNavMenu}
-                  color="inherit"
+                  color='inherit'
                 >
                   <MenuIcon />
                 </IconButton>
                 <Menu
-                  id="menu-appbar"
+                  id='menu-appbar'
                   anchorEl={anchorElNav}
                   anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'left',
+                    horizontal: 'left'
                   }}
                   keepMounted
                   transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'left',
+                    horizontal: 'left'
                   }}
                   open={Boolean(anchorElNav)}
                   onClose={handleCloseNavMenu}
                   sx={{
-                    display: { xs: 'block', md: 'none' },
+                    display: { xs: 'block', md: 'none' }
                   }}
                 >
                   {pages.map((page) => (
                     <MenuItem key={page} onClick={handleCloseNavMenu}>
-                      <Typography textAlign="center">{page}</Typography>
+                      <Typography textAlign='center'>{page}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
               </Box>
               <DinnerDiningIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
               <Typography
-                variant="h5"
+                variant='h5'
                 noWrap
-                component="a"
-                href=""
+                component='a'
+                href=''
                 sx={{
                   mr: 2,
                   display: { xs: 'flex', md: 'none' },
@@ -133,54 +133,54 @@ function ResponsiveAppBar({loggedin, setLoggedin}) {
                   fontWeight: 700,
                   letterSpacing: '.3rem',
                   color: 'inherit',
-                  textDecoration: 'none',
+                  textDecoration: 'none'
                 }}
               >
                 Racacoonie
               </Typography>
-              <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              </Box>
-    
+              <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }} />
+
               <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
+                <Tooltip title='Open settings'>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <MenuItem>www</MenuItem>
                   </IconButton>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}
-                  id="menu-appbar"
+                  id='menu-appbar'
                   anchorEl={anchorElUser}
                   anchorOrigin={{
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal: 'right'
                   }}
                   keepMounted
                   transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal: 'right'
                   }}
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  <MenuItem component={Link} to="/Profile">Profile</MenuItem>
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>            </Menu>
+                  <MenuItem component={Link} to='/Profile'>Profile</MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>            
+                </Menu>
               </Box>
             </Toolbar>
           </Container>
         </AppBar>
-      );
+    );
   } else {
     return (
-    <AppBar position="static">
-          <Container maxWidth="xl">
+      <AppBar position='static'>
+      <Container maxWidth='xl'>
             <Toolbar disableGutters>
               <DinnerDiningIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
               <Typography
-                variant="h6"
+                variant='h6'
                 noWrap
-                component="a"
-                href="/login"
+                component='a'
+                href='/login'
                 sx={{
                   mr: 2,
                   display: { xs: 'none', md: 'flex' },
@@ -188,54 +188,54 @@ function ResponsiveAppBar({loggedin, setLoggedin}) {
                   fontWeight: 700,
                   letterSpacing: '.3rem',
                   color: 'inherit',
-                  textDecoration: 'none',
+                  textDecoration: 'none'
                 }}
               >
                 Racacoonie
               </Typography>
-    
+
               <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                 <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
+                  size='large'
+                  aria-label='account of current user'
+                  aria-controls='menu-appbar'
+                  aria-haspopup='true'
                   onClick={handleOpenNavMenu}
-                  color="inherit"
+                  color='inherit'
                 >
                   <MenuIcon />
                 </IconButton>
                 <Menu
-                  id="menu-appbar"
+                  id='menu-appbar'
                   anchorEl={anchorElNav}
                   anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'left',
+                    horizontal: 'left'
                   }}
                   keepMounted
                   transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'left',
+                    horizontal: 'left'
                   }}
                   open={Boolean(anchorElNav)}
                   onClose={handleCloseNavMenu}
                   sx={{
-                    display: { xs: 'block', md: 'none' },
+                    display: { xs: 'block', md: 'none' }
                   }}
                 >
                   {pages.map((page) => (
                     <MenuItem key={page} onClick={handleCloseNavMenu}>
-                      <Typography textAlign="center">{page}</Typography>
+                      <Typography textAlign='center'>{page}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
               </Box>
               <DinnerDiningIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
               <Typography
-                variant="h5"
+                variant='h5'
                 noWrap
-                component="a"
-                href=""
+                component='a'
+                href=''
                 sx={{
                   mr: 2,
                   display: { xs: 'flex', md: 'none' },
@@ -244,42 +244,38 @@ function ResponsiveAppBar({loggedin, setLoggedin}) {
                   fontWeight: 700,
                   letterSpacing: '.3rem',
                   color: 'inherit',
-                  textDecoration: 'none',
+                  textDecoration: 'none'
                 }}
               >
                 Racacoonie
               </Typography>
-              <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              </Box>
-    
+              <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }} />
+
               <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-                    <MenuItem href="/login">Login</MenuItem>
+                <Tooltip title='Open settings'>
+                  <MenuItem href='/login'>Login</MenuItem>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}
-                  id="menu-appbar"
+                  id='menu-appbar'
                   anchorEl={anchorElUser}
                   anchorOrigin={{
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal: 'right'
                   }}
                   keepMounted
                   transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal: 'right'
                   }}
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
-                >
-          
-                   </Menu>
+                 />
               </Box>
             </Toolbar>
           </Container>
-        </AppBar>
-      );
+    </AppBar>
+    );
   }
-  
 }
 export default ResponsiveAppBar;

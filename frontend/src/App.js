@@ -24,14 +24,14 @@ function App () {
         <Routes>
           <Route path='/' element={<Homepage loggedin={loggedin} setLoggedin={setLoggedin} />} />
           <Route
-                path='/login' element={
+            path='/login' element={
                 loggedin ? <Navigate to='/' />
                   : <Login loggedin={loggedin} setLoggedin={setLoggedin} />
 }
-              />
+          />
           <Route
-                path='/recipe/:rid' element={<Recipe />}
-              />
+            path='/recipe/:rid' element={<Recipe />}
+          />
         </Routes>
       </BrowserRouter>
     </div>
