@@ -1,13 +1,17 @@
 import os
 import pandas as pd
+import numpy as np
 
 from ast import literal_eval
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy import create_engine
 from firebase_admin import auth, initialize_app, credentials
 from sqlalchemy import func
+from utils import cosine_similarity
+from utils import cosine_similarity_to_all_other_user
 
 app = Flask(__name__)
 
@@ -20,6 +24,7 @@ default_app = initialize_app(cred)
 app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/defaultdb?sslmode=disable"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
+# engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
 
 CORS(app)
 db = SQLAlchemy(app)
@@ -441,6 +446,47 @@ def get_recipe_with_filter():
 def create_recipe():
   # Write to database with user recipe
   return "200"
+
+@app.route('/recommend/users/<int:user_id>', methods=['GET'])
+def recommend_other_users(user_id):
+  try:
+    user_recipe_matrix = []
+    num_recipes = db.session.query(Recipe).count()
+    users = User.query.all()
+
+    for user in users:
+      user_vector = np.zeros(num_recipes)
+      for recipe in user.liked_recipes:
+        user_vector[recipe.id] = 1
+      
+      user_recipe_matrix.append(user_vector)
+    
+    user_recipe_matrix = np.array(user_recipe_matrix) 
+    user_similarity = cosine_similarity_to_all_other_user(user_id, user_recipe_matrix)
+    top_5_similar_users_dict = dict(sorted(user_similarity.items(), key=lambda item:-item[1])[:5])    
+
+    top_5_similar_users = User.query.filter(User.id.in_(top_5_similar_users_dict.keys())).all()
+    recommendations = []
+    for user in top_5_similar_users:
+      recipes = user.liked_recipes[:2]
+      recipes = [recipe.to_dict() for recipe in recipes]
+      entry = {'user_id': user.id, 'recipes': recipes, 'similarity': top_5_similar_users_dict[user.id]}
+      recommendations.append(entry)
+
+
+    return jsonify({'recommendations': recommendations}), 200
+
+  
+  except Exception as e:
+    print(e)
+    return 'Something went wrong', 500
+  
+  return 'Does not exist', 404
+
+
+
+
+# @app.route('/recipe/create', methods=['POST'])
 
 # Return jwt token to front-end 
 @app.route('/signup', methods=["POST"])
