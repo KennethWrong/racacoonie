@@ -11,7 +11,6 @@ export default function Global(){
     useEffect(() => {
         axios.get('http://localhost:8000/recipe/all').then((res) => {
             const data = res['data']
-            console.log(data['recipes'])
             setRecipes(data['recipes'])
         })
     }, [])
@@ -33,10 +32,8 @@ export default function Global(){
 
     const getLongLat = (countryCode) => {
         if (!(countryCode in longlatdic)) {
-            console.log(`failed ${countryCode}`)
             return [20.337, 30.337]
         }
-        console.log(longlatdic[countryCode])
         return longlatdic[countryCode];
     }
   
