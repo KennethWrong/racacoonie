@@ -1,3 +1,4 @@
+import { async } from '@firebase/util';
 import racaApp from './Axios.js';
 
 export const getAllIngredients = async () => {
@@ -23,4 +24,8 @@ export const getAllRecipes = async () => {
       Authorization: localStorage.getItem('racacoonie-auth-token')
     }
   });
+};
+
+export const getForYouRecipes = async () => {
+  return racaApp.get('/recommendation/users/' + localStorage.getItem('racacoonie-auth-token'));
 };
