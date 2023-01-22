@@ -17,6 +17,8 @@ function Login({loggedin, setLoggedin}) {
     useMemo(() => {
         // storing input name
         var authToken = localStorage.getItem("racacoonie-auth-token");
+
+        
         if (authToken) {
             setLoggedin(true);
         }
@@ -34,16 +36,6 @@ function Login({loggedin, setLoggedin}) {
         }
         setLoading(false);
         
-    }
-    
-    const handleSignOutButton = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setTimeout(() => {
-            handleSignOut();
-            setLoggedin(false);
-            setLoading(false);
-        }, 1000);
     }
 
     return (
@@ -96,7 +88,6 @@ function Login({loggedin, setLoggedin}) {
                 </div>
             </Grid>
             <Grid item xs={3}>
-                {!loggedin?
                     <LoadingButton
                     size="large"
                     onClick={handleSignInWithGoogle}
@@ -107,20 +98,6 @@ function Login({loggedin, setLoggedin}) {
                   >
                     <span>Log In With Google</span>
                   </LoadingButton>
-                :
-
-                <LoadingButton
-                    size="large"
-                    onClick={handleSignOutButton}
-                    endIcon={<LogoutIcon />}
-                    loading={loading}
-                    loadingPosition="end"
-                    variant="contained"
-                  >
-                    <span>Log out</span>
-                  </LoadingButton>
-
-                }
             </Grid>   
             
         </Grid> 
