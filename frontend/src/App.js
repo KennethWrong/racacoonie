@@ -4,9 +4,9 @@ import Login from './pages/Login';
 import React, { useState, useEffect, useMemo } from 'react';
 import Homepage from './pages/Homepage';
 import NavbarComponent from './components/Navbar';
-import Recipe from './pages/Recipe'
-import Saved from './pages/Saved'
-
+import Recipe from './pages/Recipe';
+import Saved from './pages/Saved';
+import Global from './pages/Global';
 
 function App () {
   const [loggedin, setLoggedin] = useState(false);
@@ -26,17 +26,24 @@ function App () {
         <Routes>
           <Route path='/' element={<Homepage loggedin={loggedin} setLoggedin={setLoggedin} />} />
           <Route
-                path='/login' element={
+            path='/login' element={
                 loggedin ? <Navigate to='/' />
                   : <Login loggedin={loggedin} setLoggedin={setLoggedin} />
 }
+          />
+          <Route path='/recipe/:rid' element={<Recipe />} />
+          <Route
+                path='/saved' element={loggedin ? <Saved />
+                : <Login loggedin={loggedin} setLoggedin={setLoggedin} />} 
               />
-              <Route path='/recipe/:rid' element={<Recipe />}/>
-              <Route path='/saved' element={loggedin ? <Saved /> 
-                          : <Login loggedin={loggedin} setLoggedin={setLoggedin}/>}/>
-            </Routes>
+          
+          <Route
+                path='/global' element={loggedin ? <Global />
+                : <Login loggedin={loggedin} setLoggedin={setLoggedin} />} 
+              />
+        </Routes>
 
-          </BrowserRouter>
+      </BrowserRouter>
     </div>
   );
 }

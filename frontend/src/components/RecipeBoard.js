@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import RecipeCard from './RecipeCard';
+import RecipeCards from './RecipeCards';
 import { getAllRecipes } from '../api/api';
+import './Recipe.css';
 
 const RecipeBoard = (props) => {
   const [recipes, setRecipes] = useState([]);
@@ -12,9 +13,9 @@ const RecipeBoard = (props) => {
   }, []);
 
   return (
-    <div className=''>
-      {recipes ? recipes.map(recipe => (<RecipeCard key={recipe.id} recipe={recipe} />)) : null}
-    </div>
+    <>
+      {recipes ? <RecipeCards recipes={recipes} /> : null}
+    </>
   );
 };
 

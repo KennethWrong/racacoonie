@@ -128,7 +128,7 @@ export default function Dropdownbar () {
   };
 
   return (
-    <div>
+    <div className='filters-container'>
       <Box
         sx={{
           pt: 5,
