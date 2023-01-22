@@ -6,6 +6,7 @@ import Homepage from './pages/Homepage';
 import NavbarComponent from './components/Navbar';
 import Recipe from './pages/Recipe';
 import Saved from './pages/Saved';
+import Global from './pages/Global';
 
 function App () {
   const [loggedin, setLoggedin] = useState(false);
@@ -32,7 +33,12 @@ function App () {
           />
           <Route path='/recipe/:rid' element={<Recipe />} />
           <Route
-path='/saved' element={loggedin ? <Saved />
+                path='/saved' element={loggedin ? <Saved />
+                : <Login loggedin={loggedin} setLoggedin={setLoggedin} />} 
+              />
+          
+          <Route
+                path='/global' element={loggedin ? <Global />
                 : <Login loggedin={loggedin} setLoggedin={setLoggedin} />} 
               />
         </Routes>

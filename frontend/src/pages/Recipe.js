@@ -4,6 +4,7 @@ import axios from 'axios'
 import {useParams} from 'react-router-dom';
 import { Grid } from "@mui/material";
 import RecipeBlock from "../components/RecipeBlock";
+import SaveButton from "../components/SaveButton";
 
 export default function Recipe () {
     const [recipe, setRecipe] = useState(null);
@@ -32,7 +33,12 @@ export default function Recipe () {
             {
                 recipe ? 
                 <div>
-                    <h1 className="text-6xl m-9 font-black"> {recipe['name']}</h1>
+                    <h1 className="text-6xl m-9 font-black"> 
+                    {recipe['name']} 
+                    <span>
+                        <SaveButton rid={recipe['id']}/>
+                    </span>
+                    </h1>
                     <img src="https://mdbootstrap.com/img/new/slides/041.jpg" className="max-w-full h-auto" alt="..." />
                     <div className="grid grid-cols-3 gap-4">
                         <RecipeBlock title="Time needed:" text={recipe['minutes']} />
