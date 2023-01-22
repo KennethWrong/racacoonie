@@ -321,7 +321,7 @@ def get_recipe_with_filter():
   # get specific recipe from DB 
   return "200"
 
-@app.route('/recipe/create', methods=['POST'])
+# @app.route('/recipe/create', methods=['POST'])
 
 # Return jwt token to front-end 
 @app.route('/signup', methods=["POST"])
