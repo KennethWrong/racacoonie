@@ -17,3 +17,10 @@ export const getAllTags = async () => {
 };
 
 // export const getRecipe
+export const getAllRecipes = async () => {
+  return racaApp.get('/recipe/all', {
+    headers: {
+      Authorization: localStorage.getItem('racacoonie-auth-token')
+    }
+  });
+};

@@ -2,7 +2,11 @@ import React from 'react';
 
 const RecipeCard = (props) => {
   return (
-    <h1>here</h1>
+  // <div className='text-red bg-amber-600 w-1/4 rounded-md drop-shadow-lg m-0'>
+
+    <div className='font-red'>
+      {props.recipe.name}
+    </div>
   );
 };
 
