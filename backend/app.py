@@ -1,5 +1,7 @@
 import os
+import pandas as pd
 
+from ast import literal_eval
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -13,8 +15,9 @@ cred = credentials.Certificate("./assets/secret.json")
 default_app = initialize_app(cred)
 
 # THIS IS ONLINE
-app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/ken_db?sslmode=verify-full" 
-# app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/db1?sslmode=disable"
+# app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://app:RYfC6wsILFZtZu1b7rOjmQ@void-carp-6949.5xj.cockroachlabs.cloud:26257/ken_db?sslmode=verify-full" 
+# app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://dan:EfRUhPejLHVWl_HmxrFIQA@eager-dog-6969.5xj.cockroachlabs.cloud:26257/dev?sslmode=verify-full" 
+app.config["SQLALCHEMY_DATABASE_URI"]= "cockroachdb://root@localhost:26257/db1?sslmode=disable"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
@@ -53,7 +56,7 @@ class Recipe(db.Model, SerializerMixin):
   id = db.Column(db.Integer, primary_key=True, unique=True)
 
   name = db.Column(db.String(1000), nullable=False)
-  description = db.Column(db.String(4000))
+  description = db.Column(db.String(5000))
 
   minutes = db.Column(db.Integer)
 
@@ -64,7 +67,8 @@ class Recipe(db.Model, SerializerMixin):
   saturated_fat = db.Column(db.Float)
 
   n_steps = db.Column(db.Integer)
-  steps = db.Column(db.String(4000))
+  steps = db.Column(db.String(7000))
+  region = db.Column(db.String(400))
 
 
   ingredients = db.relationship('Ingredient', secondary=ingredients_table, backref='recipes', lazy=True)
@@ -90,7 +94,7 @@ class User(db.Model, SerializerMixin):
 
   id = db.Column(db.Integer, primary_key=True, unique=True)
   username = db.Column(db.String(1000), nullable=False)
-  email = db.Column(db.String(100), unique=True, nullable=False)
+  email = db.Column(db.String(100), unique=True, nullable=True)
 
   liked_recipes = db.relationship('Recipe', secondary=liked_recipes_table, backref="user_ratings", lazy=True)
 
@@ -121,37 +125,167 @@ def init_db():
   db.drop_all()
   db.create_all()
 
-  r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15,
-              calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
-              saturated_fat=0.0, n_steps=5, steps=['make eggs and put tomatoes bruh'])
+  # r1 = Recipe(id=0, name="Ibrahim's Tomato Eggs!", description="", minutes=15,
+  #             calories=0.0, total_fat=0.0, sugar=0.0, sodium=0.0,
+  #             saturated_fat=0.0, n_steps=5, steps=['make eggs and put tomatoes bruh'])
   
-  r2 = Recipe(id=1, name="Kenneth's Fried Rice!")
-  r3 = Recipe(id=2, name="Chicken Lo Mein!")
-  r4 = Recipe(id=3, name="Qdoba!")
+  # r2 = Recipe(id=1, name="Kenneth's Fried Rice!")
+  # r3 = Recipe(id=2, name="Chicken Lo Mein!")
+  # r4 = Recipe(id=3, name="Qdoba!")
 
-  db.session.add(r1)
-  db.session.add(r2)
-  db.session.add(r3)
-  db.session.add(r4)
+  # db.session.add(r1)
+  # db.session.add(r2)
+  # db.session.add(r3)
+  # db.session.add(r4)
 
-  ing1 = Ingredient(id=0, name="eggs")
-  ing2 = Ingredient(id=1, name="tomatoes")
-  db.session.add(ing1)
-  db.session.add(ing2)
+  # ing1 = Ingredient(id=0, name="eggs")
+  # ing2 = Ingredient(id=1, name="tomatoes")
+  # db.session.add(ing1)
+  # db.session.add(ing2)
 
-  tag1 = Tag(id=0, name="vegetarian")
-  db.session.add(tag1)
+  # tag1 = Tag(id=0, name="vegetarian")
+  # db.session.add(tag1)
 
-  r1.ingredients.append(ing1)
-  r1.ingredients.append(ing2)
-  r1.tags.append(tag1)
+  # r1.ingredients.append(ing1)
+  # r1.ingredients.append(ing2)
+  # r1.tags.append(tag1)
 
-  u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
-  u1.liked_recipes.append(r1)
-  db.session.add(u1)
+  # u1 = User(id=0, username='cheesus', email='ibrahim@gmail.com')
+  # u1.liked_recipes.append(r1)
+  # db.session.add(u1)
 
   db.session.commit()
   return "Databse initalized successfully", 200
+
+# initialize database with preprocessed CSVs
+@app.route("/init-db/ingredients", methods=["GET"])
+def init_ingredients_db():
+  try:
+    ingredient_csv = "./assets/ingredients.csv"
+    data = pd.read_csv(ingredient_csv)
+
+    for i, row in data.iterrows():
+      record = Ingredient(id=row['id'], name=row['name'])
+
+      db.session.add(record)
+    
+    db.session.commit()
+
+  except Exception as e:
+    print(e)
+    
+    db.session.rollback()
+
+    return "Something went wrong", 500
+  
+  finally:
+    db.session.close()
+  
+  return "Ingredient table populated successfully", 200
+
+        
+@app.route("/init-db/tags", methods=["GET"])
+def init_tags_db():
+  try:
+    tags_csv = "./assets/tags.csv"
+    data = pd.read_csv(tags_csv)
+
+    for i, row in data.iterrows():
+      record = Tag(id=row['id'], name=str(row['name']))
+
+      db.session.add(record)
+    
+    db.session.commit()
+  except Exception as e:
+    print(e)
+    
+    db.session.rollback()
+
+    return "Something went wrong", 500
+  
+  finally:
+    db.session.close()
+  
+  return "Tag table populated successfully", 200
+
+  
+
+@app.route("/init-db/recipes", methods=["GET"])
+def init_recipes_db():
+  try:
+    recipes_csv = "./assets/recipes.csv"
+    data = pd.read_csv(recipes_csv)
+
+    for i, row in data.iterrows():
+      ingredients = literal_eval(row['ingredients'])
+      tags = literal_eval(row['tags'])
+      recipe = Recipe(
+        id=row['id'],
+        name=str(row['name']),
+        description=str(row['description']),
+        minutes=int(row['minutes']),
+        n_steps=int(row['n_steps']),
+        steps=str(row['steps']),
+        region=str(row['region'])
+      )
+      db.session.add(recipe)
+
+      for ingredient_id in ingredients:
+        ing_obj = Ingredient.query.get(ingredient_id)
+        recipe.ingredients.append(ing_obj)
+
+      for tag_id in tags:
+        tag_obj = Tag.query.get(tag_id)
+        recipe.tags.append(tag_obj)
+
+
+
+    
+    db.session.commit()
+  except Exception as e:
+    print(e)
+    db.session.rollback()
+
+    return "Something went wrong", 500
+  
+  
+  finally:
+    db.session.close()
+  
+  return "Recipe table populated successfully", 200
+
+  
+
+@app.route("/init-db/users", methods=["GET"])
+def init_users_db():
+  try:
+    interaction_csv = "./assets/interactions.csv"
+    data = pd.read_csv(interaction_csv)
+    user_ids = data['user_id'].unique()
+
+    for user_id in user_ids:
+      liked_recipes = data[data['user_id'] == user_id]['recipe_id']
+      user = User(id=int(user_id), username=f"user_{user_id}", email=f"user_{user_id}@email.com")
+      db.session.add(user)
+
+      for recipe_id in liked_recipes:
+        recipe_obj = Recipe.query.get(int(recipe_id))
+        user.liked_recipes.append(recipe_obj)
+          
+    db.session.commit()
+
+  except Exception as e:
+    print(e)
+    db.session.rollback()
+
+    return "Something went wrong", 500
+  
+  
+  finally:
+    db.session.close()
+  
+  return "Users table populated successfully", 200
+
 
 # Get all recipes from database
 
@@ -216,7 +350,7 @@ def get_recipe_with_filter():
   # get specific recipe from DB 
   return "200"
 
-@app.route('/recipe/create', methods=['POST'])
+# @app.route('/recipe/create', methods=['POST'])
 
 # Return jwt token to front-end 
 @app.route('/signup', methods=["POST"])
