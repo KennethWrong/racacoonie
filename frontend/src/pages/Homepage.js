@@ -27,7 +27,6 @@ const Homepage = ({ loggedin, setLoggedin }) => {
       {loggedin
         ? (
           <>
-            <p>Hi</p>
             <Dropdownbar recipes={recipes} setRecipes={setRecipes} />
             <RecipeCards recipes={recipes} />
 
